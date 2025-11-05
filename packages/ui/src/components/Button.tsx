@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { cn } from '../utils';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -10,7 +9,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+    const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none hover:scale-[1.02] active:scale-[0.98]';
 
     const variants = {
       primary: 'bg-ti-primary-600 text-white hover:bg-ti-primary-700 focus-visible:ring-ti-primary-500',
@@ -26,10 +25,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     return (
-      <motion.button
+      <button
         ref={ref}
-        whileHover={{ scale: disabled || isLoading ? 1 : 1.02 }}
-        whileTap={{ scale: disabled || isLoading ? 1 : 0.98 }}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         disabled={disabled || isLoading}
         {...props}
@@ -45,7 +42,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ) : (
           children
         )}
-      </motion.button>
+      </button>
     );
   }
 );

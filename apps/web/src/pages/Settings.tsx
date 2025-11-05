@@ -4,9 +4,16 @@ import { useAuth } from '../contexts/AuthContext';
 import { userAPI, privacyAPI } from '../api/client';
 import toast from 'react-hot-toast';
 
+interface PomodoroSettings {
+  focusDuration: number;
+  breakDuration: number;
+  longBreakDuration: number;
+  cyclesBeforeLongBreak: number;
+}
+
 export const SettingsPage: React.FC = () => {
-  const { user, profile, refreshUser } = useAuth();
-  const [pomodoro, setPomodoro] = useState(
+  const { profile, refreshUser } = useAuth();
+  const [pomodoro, setPomodoro] = useState<PomodoroSettings>(
     profile?.preferences?.pomodoro || {
       focusDuration: 25,
       breakDuration: 5,
@@ -41,13 +48,13 @@ export const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
+    <div className="w-full">
+      <h1 className="text-3xl font-extrabold tracking-tight text-ti-ink-900 mb-6">Settings</h1>
 
       <div className="space-y-6">
-        <Card>
+        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
           <CardHeader>
-            <CardTitle>Pomodoro Settings</CardTitle>
+            <CardTitle className="text-ti-ink-900">Pomodoro Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Input
@@ -90,20 +97,20 @@ export const SettingsPage: React.FC = () => {
               min="2"
               max="10"
             />
-            <Button onClick={handleUpdatePomodoro}>Save Settings</Button>
+            <Button onClick={handleUpdatePomodoro} className="bg-ti-green-500 hover:bg-ti-green-600 text-white">Save Settings</Button>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
           <CardHeader>
-            <CardTitle>Privacy & Data</CardTitle>
+            <CardTitle className="text-ti-ink-900">Privacy & Data</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm text-ti-text-secondary mb-2">
+              <p className="text-sm text-ti-ink-800 mb-2">
                 Export all your data in JSON format (PDPA/GDPR compliance)
               </p>
-              <Button onClick={handleExportData} variant="secondary">
+              <Button onClick={handleExportData} variant="secondary" className="border-ti-beige-300 hover:bg-ti-beige-100">
                 Export My Data
               </Button>
             </div>

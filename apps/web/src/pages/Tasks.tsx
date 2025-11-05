@@ -29,13 +29,30 @@ export const TasksPage: React.FC = () => {
 
   const handleCreate = async () => {
     try {
-      await taskAPI.create(newTask);
+      // Clean up the task data - remove empty strings
+      const taskData: any = {
+        title: newTask.title,
+        priority: newTask.priority,
+      };
+
+      // Only add optional fields if they have values
+      if (newTask.subject && newTask.subject.trim() !== '') {
+        taskData.subject = newTask.subject;
+      }
+      if (newTask.dueAt && newTask.dueAt.trim() !== '') {
+        taskData.dueAt = newTask.dueAt;
+      }
+
+      console.log('Task data being sent:', taskData);
+      await taskAPI.create(taskData);
       toast.success('Task created!');
       setIsModalOpen(false);
       setNewTask({ title: '', subject: '', priority: 'med', dueAt: '' });
       loadTasks();
-    } catch (error) {
-      toast.error('Failed to create task');
+    } catch (error: any) {
+      console.error('Failed to create task:', error);
+      const errorMessage = error?.response?.data?.message || 'Failed to create task';
+      toast.error(errorMessage);
     }
   };
 
@@ -69,21 +86,21 @@ export const TasksPage: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Tasks</h1>
-        <Button onClick={() => setIsModalOpen(true)}>+ Add Task</Button>
+        <h1 className="text-3xl font-extrabold tracking-tight text-ti-ink-900">Tasks</h1>
+        <Button onClick={() => setIsModalOpen(true)} className="bg-ti-green-500 hover:bg-ti-green-600 text-white">+ Add Task</Button>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
         {columns.map((column) => {
           const columnTasks = tasks.filter((t) => t.status === column.status);
           return (
-            <div key={column.status} className="bg-ti-surface rounded-xl border border-ti-border p-4">
+            <div key={column.status} className="bg-white rounded-2xl border border-ti-beige-300 shadow-card p-4">
               <div className="flex items-center mb-4">
                 <div className={`w-3 h-3 rounded-full ${column.color} mr-2`} />
-                <h2 className="text-lg font-semibold">{column.title}</h2>
-                <span className="ml-auto text-ti-text-tertiary text-sm">{columnTasks.length}</span>
+                <h2 className="text-lg font-semibold text-ti-ink-900">{column.title}</h2>
+                <span className="ml-auto text-black/50 text-sm">{columnTasks.length}</span>
               </div>
 
               <div className="space-y-3">
@@ -93,22 +110,22 @@ export const TasksPage: React.FC = () => {
                     layout
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-ti-surface-hover border border-ti-border rounded-lg p-3"
+                    className="bg-ti-beige-50 border border-ti-beige-200 rounded-xl p-3 hover:shadow-soft transition-shadow"
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-medium text-sm">{task.title}</h3>
+                      <h3 className="font-medium text-sm text-ti-ink-900">{task.title}</h3>
                       <button
                         onClick={() => handleDelete(task._id)}
-                        className="text-ti-text-tertiary hover:text-red-500 text-xs"
+                        className="text-black/50 hover:text-red-500 text-xl leading-none"
                       >
                         ×
                       </button>
                     </div>
                     {task.subject && (
-                      <p className="text-xs text-ti-text-tertiary mb-2">{task.subject}</p>
+                      <p className="text-xs text-black/60 mb-2">{task.subject}</p>
                     )}
                     {task.dueAt && (
-                      <p className="text-xs text-ti-text-tertiary mb-2">
+                      <p className="text-xs text-black/60 mb-2">
                         Due: {new Date(task.dueAt).toLocaleDateString()}
                       </p>
                     )}
@@ -127,7 +144,7 @@ export const TasksPage: React.FC = () => {
                       <select
                         value={task.status}
                         onChange={(e) => handleStatusChange(task._id, e.target.value)}
-                        className="text-xs bg-transparent border border-ti-border rounded px-2 py-1"
+                        className="text-xs bg-white border border-ti-beige-300 rounded-lg px-2 py-1 text-ti-ink-900"
                       >
                         <option value="todo">To Do</option>
                         <option value="doing">Doing</option>
@@ -157,11 +174,11 @@ export const TasksPage: React.FC = () => {
             placeholder="Mathematics"
           />
           <div>
-            <label className="block text-sm font-medium mb-1.5">Priority</label>
+            <label className="block text-sm font-medium mb-1.5 text-ti-ink-900">Priority</label>
             <select
               value={newTask.priority}
               onChange={(e) => setNewTask((p) => ({ ...p, priority: e.target.value }))}
-              className="w-full h-10 px-3 rounded-lg border border-ti-border bg-ti-surface"
+              className="w-full h-10 px-3 rounded-lg border border-ti-beige-300 bg-white text-ti-ink-900"
             >
               <option value="low">Low</option>
               <option value="med">Medium</option>

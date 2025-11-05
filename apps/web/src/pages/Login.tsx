@@ -26,19 +26,19 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-ti-bg">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-ti-hero">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-ti-primary-600 mb-2">TalkItOut</h1>
-          <p className="text-ti-text-secondary">Your study companion</p>
+          <h1 className="text-4xl font-bold text-ti-green-600 mb-2">TalkItOut</h1>
+          <p className="text-ti-ink-900">Your study companion</p>
         </div>
 
-        <div className="bg-ti-surface border border-ti-border rounded-xl p-8 shadow-lg">
-          <h2 className="text-2xl font-semibold mb-6">Welcome back</h2>
+        <div className="bg-white border border-ti-beige-300 rounded-2xl p-8 shadow-card">
+          <h2 className="text-2xl font-semibold mb-6 text-ti-ink-900">Welcome back</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
@@ -47,6 +47,7 @@ export const LoginPage: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
+              className="text-ti-ink-900"
               required
             />
 
@@ -56,25 +57,26 @@ export const LoginPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              className="text-ti-ink-900"
               required
             />
 
-            <Button type="submit" className="w-full" isLoading={isLoading}>
+            <Button type="submit" className="w-full bg-ti-green-500 hover:bg-ti-green-600 text-white" isLoading={isLoading}>
               Log in
             </Button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-ti-text-secondary">
+            <p className="text-sm text-ti-ink-800">
               Don't have an account?{' '}
-              <Link to="/register" className="text-ti-primary-600 hover:underline">
+              <Link to="/register" className="text-ti-green-600 hover:underline font-medium">
                 Sign up
               </Link>
             </p>
           </div>
 
-          <div className="mt-6 p-4 bg-ti-primary-100 dark:bg-ti-primary-600/10 rounded-lg">
-            <p className="text-xs text-ti-text-secondary">
+          <div className="mt-6 p-4 bg-ti-beige-100 rounded-xl border border-ti-beige-200">
+            <p className="text-xs text-ti-ink-900">
               <strong>Demo accounts:</strong><br />
               Student: weijie@student.sg / password123<br />
               Counselor: counselor@talkitout.sg / password123

@@ -52,15 +52,15 @@ export const DashboardPage: React.FC = () => {
   const focusStreak = streaks.find((s: any) => s.type === 'focus')?.count || 0;
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6">
       {/* Welcome Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-ti-primary-600 to-ti-primary-700 rounded-xl p-8 text-white"
+        className="bg-gradient-to-r from-ti-green-500 to-ti-green-600 rounded-2xl p-8 text-white shadow-card"
       >
         <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}! 👋</h1>
-        <p className="text-ti-primary-100">Ready to make today productive?</p>
+        <p className="text-white/90">Ready to make today productive?</p>
       </motion.div>
 
       {/* Quick Actions */}
@@ -73,9 +73,9 @@ export const DashboardPage: React.FC = () => {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Mood Trend */}
-        <Card>
+        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
           <CardHeader>
-            <CardTitle>Mood Trend (Last 7 Days)</CardTitle>
+            <CardTitle className="text-ti-ink-900">Mood Trend (Last 7 Days)</CardTitle>
           </CardHeader>
           <CardContent>
             {moodChartData.length > 0 ? (
@@ -87,14 +87,14 @@ export const DashboardPage: React.FC = () => {
                   <Line
                     type="monotone"
                     dataKey="mood"
-                    stroke="#4f46e5"
+                    stroke="#22C55E"
                     strokeWidth={2}
-                    dot={{ fill: '#4f46e5', r: 4 }}
+                    dot={{ fill: '#22C55E', r: 4 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-ti-text-tertiary text-center py-8">
+              <p className="text-black/60 text-center py-8">
                 No check-ins yet. Start tracking your mood!
               </p>
             )}
@@ -102,25 +102,25 @@ export const DashboardPage: React.FC = () => {
         </Card>
 
         {/* Streaks & Stats */}
-        <Card>
+        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
           <CardHeader>
-            <CardTitle>Your Progress</CardTitle>
+            <CardTitle className="text-ti-ink-900">Your Progress</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-ti-text-secondary">Check-in Streak</span>
+              <span className="text-ti-ink-800">Check-in Streak</span>
               <Badge variant="positive">🔥 {checkInStreak} days</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-ti-text-secondary">Focus Streak</span>
+              <span className="text-ti-ink-800">Focus Streak</span>
               <Badge variant="info">⚡ {focusStreak} days</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-ti-text-secondary">Average Mood</span>
+              <span className="text-ti-ink-800">Average Mood</span>
               <Badge variant="neutral">{stats?.averageMood || 0}/5</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-ti-text-secondary">Total Check-ins</span>
+              <span className="text-ti-ink-800">Total Check-ins</span>
               <Badge>{stats?.totalCheckIns || 0}</Badge>
             </div>
           </CardContent>
@@ -128,11 +128,11 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Today's Tasks */}
-      <Card>
+      <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
         <CardHeader className="flex items-center justify-between">
-          <CardTitle>Today's Tasks</CardTitle>
+          <CardTitle className="text-ti-ink-900">Today's Tasks</CardTitle>
           <Link to="/app/tasks">
-            <Button size="sm" variant="ghost">
+            <Button size="sm" variant="ghost" className="text-ti-green-600 hover:bg-ti-green-50">
               View All
             </Button>
           </Link>
@@ -143,11 +143,11 @@ export const DashboardPage: React.FC = () => {
               {todayTasks.slice(0, 5).map((task) => (
                 <div
                   key={task._id}
-                  className="flex items-center justify-between p-3 bg-ti-surface-hover rounded-lg"
+                  className="flex items-center justify-between p-3 bg-ti-beige-50 rounded-xl border border-ti-beige-200 hover:shadow-soft transition-shadow"
                 >
                   <div className="flex items-center space-x-3">
                     <input type="checkbox" checked={task.status === 'done'} readOnly />
-                    <span className={task.status === 'done' ? 'line-through text-ti-text-tertiary' : ''}>
+                    <span className={task.status === 'done' ? 'line-through text-black/50' : 'text-ti-ink-900'}>
                       {task.title}
                     </span>
                   </div>
@@ -158,7 +158,7 @@ export const DashboardPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <p className="text-ti-text-tertiary text-center py-8">No tasks due today. You're all set!</p>
+            <p className="text-black/60 text-center py-8">No tasks due today. You're all set!</p>
           )}
         </CardContent>
       </Card>
@@ -171,10 +171,10 @@ const QuickActionCard: React.FC<{ to: string; icon: string; label: string }> = (
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className="bg-ti-surface border border-ti-border rounded-xl p-4 text-center hover:shadow-lg transition-all"
+      className="bg-white border border-ti-beige-300 rounded-xl p-4 text-center hover:shadow-card transition-all"
     >
       <div className="text-3xl mb-2">{icon}</div>
-      <p className="text-sm font-medium text-ti-text-primary">{label}</p>
+      <p className="text-sm font-medium text-ti-ink-900">{label}</p>
     </motion.div>
   </Link>
 );

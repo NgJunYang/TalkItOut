@@ -180,7 +180,7 @@ export const ChatPage: React.FC = () => {
                 }
               }}
               placeholder="Share what's on your mind..."
-              className="flex-1 min-h-[60px] max-h-[120px]"
+              className="flex-1 min-h-[60px] max-h-[120px] text-ti-ink-900"
               disabled={isLoading}
             />
             <Button onClick={handleSend} disabled={!input.trim() || isLoading} isLoading={isLoading}>

@@ -14,7 +14,6 @@ export const Layout: React.FC = () => {
     navigate('/login');
   };
 
-  const isStudent = user?.role === 'student';
   const isCounselor = user?.role === 'counselor' || user?.role === 'admin';
 
   const studentNav = [

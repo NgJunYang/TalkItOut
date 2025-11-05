@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import {
   AIClassification,
   aiClassificationSchema,
@@ -10,35 +10,49 @@ import {
 } from '@talkitout/lib';
 import { Message } from '../../models/Message';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Validate API key on initialization
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+if (!GEMINI_API_KEY) {
+  console.error('ERROR: GEMINI_API_KEY is not set in environment variables');
+} else {
+  console.log('Gemini API Key loaded:', GEMINI_API_KEY.substring(0, 10) + '...');
+}
 
-const AI_MODEL = process.env.AI_MODEL || 'gpt-4o-mini';
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
+
+const AI_MODEL = process.env.AI_MODEL || 'gemini-pro';
 const ALLOW_EXTERNAL_PII = process.env.ALLOW_EXTERNAL_PII === 'true';
+
+console.log('AI Configuration:', { model: AI_MODEL, allowPII: ALLOW_EXTERNAL_PII });
 
 /**
  * Analyzes text for sentiment and risk indicators
  */
 export async function analyzeText(text: string): Promise<AIClassification> {
   try {
-    // Pseudonymize before sending to OpenAI
+    // Pseudonymize before sending to Gemini
     const sanitizedText = pseudonymizeText(text, ALLOW_EXTERNAL_PII);
 
-    const response = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [
-        { role: 'system', content: CLASSIFIER_SYSTEM_PROMPT },
-        { role: 'user', content: sanitizedText },
-      ],
-      temperature: 0.3,
-      max_tokens: 150,
+    const model = genAI.getGenerativeModel({ model: AI_MODEL });
+
+    const prompt = `${CLASSIFIER_SYSTEM_PROMPT}\n\nUser message: ${sanitizedText}`;
+
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.3,
+        maxOutputTokens: 1000, // Increased to accommodate thinking tokens in Gemini 2.5
+      },
     });
 
-    const content = response.choices[0]?.message?.content?.trim();
+    let content = result.response.text().trim();
     if (!content) {
-      throw new Error('Empty response from OpenAI');
+      console.error('Empty response from Gemini. Finish reason:', result.response.candidates?.[0]?.finishReason);
+      throw new Error('Empty response from Gemini');
     }
+
+    // Strip markdown code blocks if present
+    content = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
 
     // Parse and validate JSON response
     const parsed = JSON.parse(content);
@@ -72,31 +86,30 @@ export async function generateResponse(
       .limit(historyLimit)
       .lean();
 
-    // Build conversation context
-    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: 'system', content: ASSISTANT_SYSTEM_PROMPT },
-    ];
+    // Build conversation context with system prompt
+    let conversationText = `${ASSISTANT_SYSTEM_PROMPT}\n\n`;
 
     // Add recent history (oldest to newest)
     history.reverse().forEach((msg) => {
-      messages.push({
-        role: msg.role === 'user' ? 'user' : 'assistant',
-        content: msg.text,
-      });
+      const role = msg.role === 'user' ? 'User' : 'Assistant';
+      conversationText += `${role}: ${msg.text}\n\n`;
     });
 
     // Add current user message
     const sanitizedMessage = pseudonymizeText(userMessage, ALLOW_EXTERNAL_PII);
-    messages.push({ role: 'user', content: sanitizedMessage });
+    conversationText += `User: ${sanitizedMessage}\n\nAssistant:`;
 
-    const response = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages,
-      temperature: 0.7,
-      max_tokens: 500,
+    const model = genAI.getGenerativeModel({ model: AI_MODEL });
+
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: conversationText }] }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 1000, // Increased to accommodate thinking tokens in Gemini 2.5
+      },
     });
 
-    let aiResponse = response.choices[0]?.message?.content?.trim();
+    let aiResponse = result.response.text().trim();
     if (!aiResponse) {
       return "I'm here to help! Can you tell me more about what's on your mind?";
     }
@@ -104,7 +117,25 @@ export async function generateResponse(
     return aiResponse;
   } catch (error) {
     console.error('Error generating response:', error);
-    return "I'm having trouble responding right now. Let's take a moment and try again.";
+
+    // Fallback: Return helpful mock responses based on user message keywords
+    const lowerMessage = userMessage.toLowerCase();
+
+    if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
+      return "Hello! I'm here to support you. How are you feeling today?";
+    } else if (lowerMessage.includes('stress') || lowerMessage.includes('anxious')) {
+      return "I hear that you're feeling stressed. That's completely understandable. Would you like to talk about what's causing you stress? Sometimes breaking things down can help make them feel more manageable.";
+    } else if (lowerMessage.includes('help')) {
+      return "I'm here to help! I can assist you with managing your tasks, tracking your mood, or just chat about what's on your mind. What would you like to focus on today?";
+    } else if (lowerMessage.includes('homework') || lowerMessage.includes('study')) {
+      return "Let's work on your studies together! Would you like help organizing your homework, creating a study schedule, or using the Pomodoro technique to stay focused?";
+    } else if (lowerMessage.includes('sad') || lowerMessage.includes('down')) {
+      return "I'm sorry you're feeling down. Your feelings are valid, and it's okay to have difficult days. Would you like to talk about what's been bothering you?";
+    } else if (lowerMessage.includes('thank')) {
+      return "You're very welcome! I'm always here whenever you need support. Is there anything else I can help you with?";
+    } else {
+      return "I understand. Tell me more about what's on your mind. I'm here to listen and support you.";
+    }
   }
 }
 

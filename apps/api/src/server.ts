@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-dotenv.config();
+// IMPORTANT: Load environment variables FIRST before any other imports
+import './config/env';
 
 import http from 'http';
 import { createApp } from './app';

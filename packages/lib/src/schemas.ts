@@ -28,8 +28,14 @@ export const loginSchema = z.object({
 // Task Schemas
 export const createTaskSchema = z.object({
   title: z.string().min(1).max(VALIDATION.MAX_TASK_TITLE_LENGTH),
-  subject: z.string().optional(),
-  dueAt: z.string().datetime().optional(),
+  subject: z.preprocess(
+    (val) => (val === '' ? undefined : val),
+    z.string().optional()
+  ),
+  dueAt: z.preprocess(
+    (val) => (val === '' ? undefined : val),
+    z.string().datetime().optional()
+  ),
   priority: z.enum([TASK_PRIORITY.LOW, TASK_PRIORITY.MED, TASK_PRIORITY.HIGH]).optional(),
 });
 

@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(findstr:*)",
+      "Bash(npm run seed:*)",
+      "Bash(node test-gemini.js:*)",
+      "Bash(node:*)",
+      "Bash(del:*)",
+      "Bash(npm run build:*)",
+      "Bash(nul)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout /t 8)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(ping:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

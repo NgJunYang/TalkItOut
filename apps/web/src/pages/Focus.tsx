@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Button, Card, CardHeader, CardTitle, CardContent, Progress } from '@talkitout/ui';
+import { Button, Card, CardHeader, CardTitle, CardContent } from '@talkitout/ui';
 import { pomodoroAPI } from '../api/client';
 import { useSocket } from '../contexts/SocketContext';
 import { useAuth } from '../contexts/AuthContext';

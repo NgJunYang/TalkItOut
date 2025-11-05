@@ -12,6 +12,7 @@ import { TasksPage } from './pages/Tasks';
 import { CheckInsPage } from './pages/CheckIns';
 import { SettingsPage } from './pages/Settings';
 import { CounselorDashboard } from './pages/Counselor';
+import { CounselorStudentsPage } from './pages/CounselorStudents';
 import { Layout } from './components/Layout';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; counselorOnly?: boolean }> = ({
@@ -77,6 +78,7 @@ const AppRoutes: React.FC = () => {
         }
       >
         <Route index element={<CounselorDashboard />} />
+        <Route path="students" element={<CounselorStudentsPage />} />
       </Route>
 
       {/* 404 */}
