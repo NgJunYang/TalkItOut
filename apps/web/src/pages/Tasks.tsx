@@ -79,11 +79,11 @@ export const TasksPage: React.FC = () => {
         {columns.map((column) => {
           const columnTasks = tasks.filter((t) => t.status === column.status);
           return (
-            <div key={column.status} className="bg-ti-surface rounded-xl border border-ti-border p-4">
+            <div key={column.status} className="bg-white rounded-2xl border-2 border-ti-border p-4 shadow-soft">
               <div className="flex items-center mb-4">
-                <div className={`w-3 h-3 rounded-full ${column.color} mr-2`} />
-                <h2 className="text-lg font-semibold">{column.title}</h2>
-                <span className="ml-auto text-ti-text-tertiary text-sm">{columnTasks.length}</span>
+                <div className={`w-3 h-3 rounded-full ${column.color} mr-2 shadow-sm`} />
+                <h2 className="text-lg font-bold text-ink">{column.title}</h2>
+                <span className="ml-auto text-ti-text-tertiary text-sm font-semibold">{columnTasks.length}</span>
               </div>
 
               <div className="space-y-3">
@@ -93,7 +93,8 @@ export const TasksPage: React.FC = () => {
                     layout
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-ti-surface-hover border border-ti-border rounded-lg p-3"
+                    whileHover={{ y: -2, boxShadow: '0 4px 12px rgba(34, 197, 94, 0.1)' }}
+                    className="bg-gradient-to-br from-white to-accent-mint/10 border border-brand-green/20 rounded-xl p-4 shadow-soft cursor-pointer"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-medium text-sm">{task.title}</h3>

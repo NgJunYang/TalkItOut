@@ -81,13 +81,17 @@ export const ChatPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-ti-surface border border-ti-border rounded-xl overflow-hidden" style={{ height: 'calc(100vh - 200px)' }}>
+      <div className="bg-white border border-ti-border rounded-2xl overflow-hidden shadow-soft-lg relative" style={{ height: 'calc(100vh - 200px)' }}>
+        {/* Decorative background */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent-mint/20 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent-peach/20 rounded-full blur-3xl -ml-24 -mb-24 pointer-events-none" />
+
         {/* Header */}
-        <div className="border-b border-ti-border p-4">
+        <div className="border-b border-ti-border p-4 bg-white/80 backdrop-blur-sm relative z-10">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-semibold">AI Study Companion</h1>
-              <p className="text-sm text-ti-text-tertiary">Always here to help</p>
+              <h1 className="text-xl font-bold text-ink">💬 AI Study Companion</h1>
+              <p className="text-sm text-ti-text-secondary">Always here to help you grow</p>
             </div>
             <Button size="sm" variant="ghost" onClick={loadHistory}>
               ↻ Refresh
@@ -123,18 +127,19 @@ export const ChatPage: React.FC = () => {
                 key={idx}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-xl p-4 ${
+                  className={`max-w-[80%] rounded-2xl p-4 ${
                     message.role === 'user'
-                      ? 'bg-ti-primary-600 text-white'
-                      : 'bg-ti-surface-hover text-ti-text-primary'
+                      ? 'bg-gradient-green text-white shadow-soft'
+                      : 'bg-gradient-to-br from-accent-mint/40 to-white border border-brand-green/20 text-ink'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap">{message.text}</p>
+                  <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
                   <div className="flex items-center justify-between mt-2 gap-2">
-                    <span className="text-xs opacity-70">
+                    <span className={`text-xs ${message.role === 'user' ? 'text-white/70' : 'text-ti-text-tertiary'}`}>
                       {formatRelativeTime(message.createdAt)}
                     </span>
                     {message.role === 'user' && message.sentiment && (
@@ -154,11 +159,11 @@ export const ChatPage: React.FC = () => {
               animate={{ opacity: 1 }}
               className="flex justify-start"
             >
-              <div className="bg-ti-surface-hover rounded-xl p-4">
+              <div className="bg-gradient-to-br from-accent-mint/40 to-white border border-brand-green/20 rounded-2xl p-4">
                 <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-ti-text-tertiary rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-ti-text-tertiary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                  <div className="w-2 h-2 bg-ti-text-tertiary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                  <div className="w-2.5 h-2.5 bg-brand-green rounded-full animate-bounce" />
+                  <div className="w-2.5 h-2.5 bg-brand-green rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                  <div className="w-2.5 h-2.5 bg-brand-green rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                 </div>
               </div>
             </motion.div>
@@ -194,12 +199,17 @@ export const ChatPage: React.FC = () => {
       </div>
 
       {/* Crisis Notice */}
-      <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-        <p className="text-sm text-ti-text-secondary">
-          <strong>Note:</strong> This AI is a support tool, not a crisis service. If you're in immediate danger, call 999
-          or contact Samaritans of Singapore at 1767.
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mt-4 p-4 bg-gradient-to-r from-accent-peach/30 to-yellow-50 border-2 border-orange-200 rounded-2xl"
+      >
+        <p className="text-sm text-ink">
+          <span className="font-bold text-orange-700">⚠️ Note:</span> This AI is a support tool, not a crisis service. If you're in immediate danger, call <span className="font-semibold">999</span>{' '}
+          or contact Samaritans of Singapore at <span className="font-semibold">1767</span>.
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 };

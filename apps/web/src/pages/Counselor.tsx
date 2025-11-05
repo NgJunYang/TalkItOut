@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent, Badge } from '@talkitout/ui';
 import { riskAPI, metricsAPI } from '../api/client';
 import toast from 'react-hot-toast';
@@ -31,26 +32,26 @@ export const CounselorDashboard: React.FC = () => {
       <div className="grid md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{metrics?.users.total || 0}</div>
-            <div className="text-sm text-ti-text-tertiary">Total Students</div>
+            <div className="text-3xl font-extrabold text-brand-teal">{metrics?.users.total || 0}</div>
+            <div className="text-sm text-ti-text-secondary font-medium">Total Students</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{metrics?.users.active || 0}</div>
-            <div className="text-sm text-ti-text-tertiary">Active (7 days)</div>
+            <div className="text-3xl font-extrabold text-brand-green">{metrics?.users.active || 0}</div>
+            <div className="text-sm text-ti-text-secondary font-medium">Active (7 days)</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{metrics?.mood.average || 0}</div>
-            <div className="text-sm text-ti-text-tertiary">Avg Mood</div>
+            <div className="text-3xl font-extrabold text-blue-600">{metrics?.mood.average || 0}</div>
+            <div className="text-sm text-ti-text-secondary font-medium">Avg Mood</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-red-600">{metrics?.risk.openFlags || 0}</div>
-            <div className="text-sm text-ti-text-tertiary">Open Risk Flags</div>
+          <CardContent className="pt-6 bg-gradient-to-br from-red-50 to-white">
+            <div className="text-3xl font-extrabold text-red-600">{metrics?.risk.openFlags || 0}</div>
+            <div className="text-sm text-ti-text-secondary font-medium">Open Risk Flags</div>
           </CardContent>
         </Card>
       </div>
@@ -65,9 +66,11 @@ export const CounselorDashboard: React.FC = () => {
           ) : (
             <div className="space-y-3">
               {flags.map((flag) => (
-                <div
+                <motion.div
                   key={flag._id}
-                  className="flex items-start justify-between p-4 bg-ti-surface-hover rounded-lg"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-start justify-between p-4 bg-gradient-to-r from-red-50/50 to-white border-l-4 border-red-500 rounded-xl shadow-soft hover:shadow-soft-lg transition-all"
                 >
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
@@ -92,7 +95,7 @@ export const CounselorDashboard: React.FC = () => {
                       {new Date(flag.createdAt).toLocaleString()}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           )}

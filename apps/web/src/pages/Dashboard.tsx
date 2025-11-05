@@ -57,10 +57,14 @@ export const DashboardPage: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-ti-primary-600 to-ti-primary-700 rounded-xl p-8 text-white"
+        className="bg-gradient-green rounded-2xl p-8 text-white shadow-glow-green relative overflow-hidden"
       >
-        <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}! 👋</h1>
-        <p className="text-ti-primary-100">Ready to make today productive?</p>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24" />
+        <div className="relative z-10">
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-2">Welcome back, {user?.name}! 👋</h1>
+          <p className="text-white/90 text-lg">Ready to make today productive? Let's grow together 🌱</p>
+        </div>
       </motion.div>
 
       {/* Quick Actions */}
@@ -81,15 +85,23 @@ export const DashboardPage: React.FC = () => {
             {moodChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={moodChartData}>
-                  <XAxis dataKey="date" stroke="#9ca3af" />
-                  <YAxis domain={[1, 5]} stroke="#9ca3af" />
-                  <Tooltip />
+                  <XAxis dataKey="date" stroke="#94a3b8" style={{ fontSize: '12px' }} />
+                  <YAxis domain={[1, 5]} stroke="#94a3b8" style={{ fontSize: '12px' }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #F0E6D2',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="mood"
-                    stroke="#4f46e5"
-                    strokeWidth={2}
-                    dot={{ fill: '#4f46e5', r: 4 }}
+                    stroke="#22C55E"
+                    strokeWidth={3}
+                    dot={{ fill: '#22C55E', r: 5, strokeWidth: 2, stroke: '#fff' }}
+                    activeDot={{ r: 7 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -141,20 +153,27 @@ export const DashboardPage: React.FC = () => {
           {todayTasks.length > 0 ? (
             <div className="space-y-2">
               {todayTasks.slice(0, 5).map((task) => (
-                <div
+                <motion.div
                   key={task._id}
-                  className="flex items-center justify-between p-3 bg-ti-surface-hover rounded-lg"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center justify-between p-4 bg-gradient-to-r from-accent-mint/30 to-white border border-brand-green/10 rounded-xl hover:shadow-soft transition-all"
                 >
                   <div className="flex items-center space-x-3">
-                    <input type="checkbox" checked={task.status === 'done'} readOnly />
-                    <span className={task.status === 'done' ? 'line-through text-ti-text-tertiary' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={task.status === 'done'}
+                      readOnly
+                      className="w-5 h-5 text-brand-green border-brand-green/30 rounded focus:ring-brand-green"
+                    />
+                    <span className={task.status === 'done' ? 'line-through text-ti-text-tertiary' : 'font-medium text-ink'}>
                       {task.title}
                     </span>
                   </div>
                   <Badge variant={task.priority === 'high' ? 'warning' : 'default'}>
                     {task.priority}
                   </Badge>
-                </div>
+                </motion.div>
               ))}
             </div>
           ) : (
@@ -169,12 +188,12 @@ export const DashboardPage: React.FC = () => {
 const QuickActionCard: React.FC<{ to: string; icon: string; label: string }> = ({ to, icon, label }) => (
   <Link to={to}>
     <motion.div
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.05, y: -4 }}
       whileTap={{ scale: 0.95 }}
-      className="bg-ti-surface border border-ti-border rounded-xl p-4 text-center hover:shadow-lg transition-all"
+      className="bg-white border-2 border-brand-green/20 rounded-2xl p-6 text-center hover:shadow-soft-lg hover:border-brand-green/40 transition-all group"
     >
-      <div className="text-3xl mb-2">{icon}</div>
-      <p className="text-sm font-medium text-ti-text-primary">{label}</p>
+      <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{icon}</div>
+      <p className="text-sm font-semibold text-ink">{label}</p>
     </motion.div>
   </Link>
 );

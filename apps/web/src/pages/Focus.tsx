@@ -157,7 +157,7 @@ export const FocusPage: React.FC = () => {
                 {/* Breathing Circle */}
                 <motion.div
                   animate={{
-                    scale: isActive && !isPaused && sessionType === 'focus' ? [1, 1.1, 1] : 1,
+                    scale: isActive && !isPaused && sessionType === 'focus' ? [1, 1.05, 1] : 1,
                   }}
                   transition={{
                     duration: 4,
@@ -165,35 +165,46 @@ export const FocusPage: React.FC = () => {
                     ease: 'easeInOut',
                   }}
                   className="mx-auto mb-8 relative"
-                  style={{ width: 280, height: 280 }}
+                  style={{ width: 300, height: 300 }}
                 >
-                  <svg className="w-full h-full transform -rotate-90">
+                  {/* Outer glow */}
+                  <div className="absolute inset-0 bg-gradient-green opacity-10 rounded-full blur-2xl" />
+
+                  <svg className="w-full h-full transform -rotate-90 relative z-10">
+                    <defs>
+                      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#22C55E" />
+                        <stop offset="100%" stopColor="#10B981" />
+                      </linearGradient>
+                    </defs>
                     <circle
-                      cx="140"
-                      cy="140"
-                      r="130"
+                      cx="150"
+                      cy="150"
+                      r="140"
                       fill="none"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      className="text-ti-border"
+                      stroke="#F0E6D2"
+                      strokeWidth="6"
                     />
                     <circle
-                      cx="140"
-                      cy="140"
-                      r="130"
+                      cx="150"
+                      cy="150"
+                      r="140"
                       fill="none"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      strokeDasharray={`${2 * Math.PI * 130}`}
-                      strokeDashoffset={`${2 * Math.PI * 130 * (1 - progressPercent / 100)}`}
+                      stroke="url(#progressGradient)"
+                      strokeWidth="12"
+                      strokeDasharray={`${2 * Math.PI * 140}`}
+                      strokeDashoffset={`${2 * Math.PI * 140 * (1 - progressPercent / 100)}`}
                       strokeLinecap="round"
-                      className="text-ti-primary-600 transition-all duration-1000"
+                      className="transition-all duration-1000 drop-shadow-lg"
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-6xl font-bold mb-2">{formatTime(timeLeft)}</div>
-                      {isPaused && <div className="text-ti-text-tertiary">Paused</div>}
+                      <div className="text-6xl font-extrabold text-ink mb-2">{formatTime(timeLeft)}</div>
+                      {isPaused && <div className="text-ti-text-tertiary font-medium">Paused</div>}
+                      {isActive && !isPaused && (
+                        <div className="text-brand-green font-medium animate-pulse">You're doing great! 🌱</div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -246,16 +257,22 @@ export const FocusPage: React.FC = () => {
             <CardHeader>
               <CardTitle>Quick Activities</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <Button variant="secondary" size="sm" className="w-full justify-start">
-                🧘 Box Breathing (4-4-4-4)
-              </Button>
-              <Button variant="secondary" size="sm" className="w-full justify-start">
-                🖐️ 5-4-3-2-1 Grounding
-              </Button>
-              <Button variant="secondary" size="sm" className="w-full justify-start">
-                📝 Capture a Thought
-              </Button>
+            <CardContent className="space-y-3">
+              <motion.div whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
+                <Button variant="secondary" size="sm" className="w-full justify-start">
+                  🧘 Box Breathing (4-4-4-4)
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
+                <Button variant="secondary" size="sm" className="w-full justify-start">
+                  🖐️ 5-4-3-2-1 Grounding
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
+                <Button variant="secondary" size="sm" className="w-full justify-start">
+                  📝 Capture a Thought
+                </Button>
+              </motion.div>
             </CardContent>
           </Card>
         </div>

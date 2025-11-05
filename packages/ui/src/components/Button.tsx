@@ -10,13 +10,13 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+    const baseStyles = 'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
 
     const variants = {
-      primary: 'bg-ti-primary-600 text-white hover:bg-ti-primary-700 focus-visible:ring-ti-primary-500',
-      secondary: 'bg-ti-surface border border-ti-border text-ti-text-primary hover:bg-ti-surface-hover',
-      ghost: 'text-ti-text-primary hover:bg-ti-surface-hover',
-      danger: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500',
+      primary: 'bg-gradient-green text-white hover:shadow-glow-green focus-visible:ring-brand-green shadow-soft',
+      secondary: 'bg-white border-2 border-brand-green/20 text-brand-green hover:bg-accent-mint hover:border-brand-green',
+      ghost: 'text-ti-text-primary hover:bg-accent-mint hover:text-brand-green',
+      danger: 'bg-gradient-to-br from-red-500 to-red-600 text-white hover:shadow-lg focus-visible:ring-red-500',
     };
 
     const sizes = {

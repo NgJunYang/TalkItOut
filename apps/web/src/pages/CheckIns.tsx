@@ -61,23 +61,32 @@ export const CheckInsPage: React.FC = () => {
           <CardTitle>How are you feeling today?</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-center space-x-4 mb-6">
-            {moods.map((m) => (
-              <motion.button
-                key={m.value}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setMood(m.value)}
-                className={`flex flex-col items-center p-4 rounded-xl border-2 transition-colors ${
-                  mood === m.value
-                    ? 'border-ti-primary-600 bg-ti-primary-600/10'
-                    : 'border-ti-border hover:border-ti-primary-600/50'
-                }`}
-              >
-                <div className="text-4xl mb-2">{m.emoji}</div>
-                <span className="text-xs text-ti-text-secondary">{m.label}</span>
-              </motion.button>
-            ))}
+          <div className="flex justify-center flex-wrap gap-3 mb-6">
+            {moods.map((m) => {
+              const gradients = [
+                'from-red-100 to-red-50 border-red-300',
+                'from-orange-100 to-orange-50 border-orange-300',
+                'from-yellow-100 to-yellow-50 border-yellow-300',
+                'from-accent-mint to-green-50 border-brand-green/30',
+                'from-accent-mint to-brand-green/20 border-brand-green/50',
+              ];
+              return (
+                <motion.button
+                  key={m.value}
+                  whileHover={{ scale: 1.1, y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setMood(m.value)}
+                  className={`flex flex-col items-center p-5 rounded-2xl border-2 transition-all ${
+                    mood === m.value
+                      ? `bg-gradient-to-br ${gradients[m.value - 1]} shadow-soft-lg`
+                      : 'border-ti-border bg-white hover:shadow-soft'
+                  }`}
+                >
+                  <div className="text-5xl mb-2">{m.emoji}</div>
+                  <span className="text-xs font-semibold text-ink">{m.label}</span>
+                </motion.button>
+              );
+            })}
           </div>
 
           <TextArea
@@ -107,31 +116,40 @@ export const CheckInsPage: React.FC = () => {
             </p>
           ) : (
             <div className="space-y-3">
-              {checkIns.map((checkIn) => (
-                <motion.div
-                  key={checkIn._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start space-x-4 p-4 bg-ti-surface-hover rounded-lg"
-                >
-                  <div className="text-3xl">
-                    {moods.find((m) => m.value === checkIn.mood)?.emoji}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium">
-                        {moods.find((m) => m.value === checkIn.mood)?.label}
-                      </span>
-                      <span className="text-xs text-ti-text-tertiary">
-                        {formatRelativeTime(checkIn.createdAt)}
-                      </span>
+              {checkIns.map((checkIn) => {
+                const gradients = [
+                  'from-red-50 to-white border-red-200',
+                  'from-orange-50 to-white border-orange-200',
+                  'from-yellow-50 to-white border-yellow-200',
+                  'from-accent-mint/30 to-white border-brand-green/20',
+                  'from-accent-mint/40 to-white border-brand-green/30',
+                ];
+                return (
+                  <motion.div
+                    key={checkIn._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex items-start space-x-4 p-4 bg-gradient-to-r ${gradients[checkIn.mood - 1]} border rounded-2xl hover:shadow-soft transition-all`}
+                  >
+                    <div className="text-4xl">
+                      {moods.find((m) => m.value === checkIn.mood)?.emoji}
                     </div>
-                    {checkIn.note && (
-                      <p className="text-sm text-ti-text-secondary">{checkIn.note}</p>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-ink">
+                          {moods.find((m) => m.value === checkIn.mood)?.label}
+                        </span>
+                        <span className="text-xs text-ti-text-tertiary font-medium">
+                          {formatRelativeTime(checkIn.createdAt)}
+                        </span>
+                      </div>
+                      {checkIn.note && (
+                        <p className="text-sm text-ti-text-secondary leading-relaxed">{checkIn.note}</p>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </CardContent>

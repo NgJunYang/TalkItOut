@@ -11,10 +11,10 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <motion.div
         ref={ref}
-        whileHover={hover ? { y: -4, boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)' } : undefined}
+        whileHover={hover ? { y: -4, boxShadow: '0 12px 32px rgba(34, 197, 94, 0.1)' } : undefined}
         transition={{ duration: 0.2 }}
         className={cn(
-          'rounded-xl bg-ti-surface border border-ti-border p-6',
+          'rounded-2xl bg-white border border-ti-border p-6 shadow-soft hover:shadow-soft-lg transition-shadow',
           className
         )}
         {...props}
@@ -32,7 +32,7 @@ export const CardHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ cla
 );
 
 export const CardTitle: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = ({ className, ...props }) => (
-  <h3 className={cn('text-xl font-semibold text-ti-text-primary', className)} {...props} />
+  <h3 className={cn('text-xl font-bold text-ink', className)} {...props} />
 );
 
 export const CardDescription: React.FC<React.HTMLAttributes<HTMLParagraphElement>> = ({ className, ...props }) => (
