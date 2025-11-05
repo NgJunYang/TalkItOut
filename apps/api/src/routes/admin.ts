@@ -50,6 +50,10 @@ router.get(
   authorize(USER_ROLES.ADMIN),
   async (req: AuthRequest, res: Response, next) => {
     try {
+      if (!mongoose.connection.db) {
+        throw new Error('Database not connected');
+      }
+
       const collections = await mongoose.connection.db.collections();
       const stats = await Promise.all(
         collections.map(async (col) => ({
