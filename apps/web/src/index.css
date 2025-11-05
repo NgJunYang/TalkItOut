@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light mode colors */
+  --ti-bg: #f8fafc;
+  --ti-surface: #ffffff;
+  --ti-surface-hover: #f1f5f9;
+  --ti-border: #e2e8f0;
+  --ti-text-primary: #0f172a;
+  --ti-text-secondary: #475569;
+  --ti-text-tertiary: #94a3b8;
+}
+
+.dark {
+  /* Dark mode colors */
+  --ti-bg: #0b1020;
+  --ti-surface: #111827;
+  --ti-surface-hover: #1f2937;
+  --ti-border: #374151;
+  --ti-text-primary: #f9fafb;
+  --ti-text-secondary: #d1d5db;
+  --ti-text-tertiary: #9ca3af;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--ti-bg);
+  color: var(--ti-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ti-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ti-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ti-text-tertiary);
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
