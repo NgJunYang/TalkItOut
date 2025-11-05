@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import {
   AIClassification,
   aiClassificationSchema,
@@ -10,38 +10,47 @@ import {
 } from '@talkitout/lib';
 import { Message } from '../../models/Message';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-const AI_MODEL = process.env.AI_MODEL || 'gpt-4o-mini';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY;
 const ALLOW_EXTERNAL_PII = process.env.ALLOW_EXTERNAL_PII === 'true';
 
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
+
 /**
- * Analyzes text for sentiment and risk indicators
+ * Analyzes text for sentiment and risk indicators using Gemini
  */
 export async function analyzeText(text: string): Promise<AIClassification> {
   try {
-    // Pseudonymize before sending to OpenAI
+    if (!GEMINI_API_KEY) {
+      console.warn('No Gemini API key provided, using safe defaults');
+      return {
+        sentiment: 'neu',
+        riskTags: [],
+        severity: 1,
+      };
+    }
+
+    // Pseudonymize before sending to Gemini
     const sanitizedText = pseudonymizeText(text, ALLOW_EXTERNAL_PII);
 
-    const response = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [
-        { role: 'system', content: CLASSIFIER_SYSTEM_PROMPT },
-        { role: 'user', content: sanitizedText },
-      ],
-      temperature: 0.3,
-      max_tokens: 150,
-    });
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
-    const content = response.choices[0]?.message?.content?.trim();
-    if (!content) {
-      throw new Error('Empty response from OpenAI');
+    const prompt = `${CLASSIFIER_SYSTEM_PROMPT}\n\nAnalyze this text: "${sanitizedText}"`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const content = response.text().trim();
+
+    // Extract JSON from response (Gemini sometimes wraps it in markdown)
+    let jsonText = content;
+    if (content.includes('```json')) {
+      jsonText = content.match(/```json\n([\s\S]*?)\n```/)?.[1] || content;
+    } else if (content.includes('```')) {
+      jsonText = content.match(/```\n([\s\S]*?)\n```/)?.[1] || content;
     }
 
     // Parse and validate JSON response
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(jsonText);
     const validated = aiClassificationSchema.parse(parsed);
 
     return validated;
@@ -57,7 +66,7 @@ export async function analyzeText(text: string): Promise<AIClassification> {
 }
 
 /**
- * Generates AI response to user message
+ * Generates AI response to user message using Gemini
  */
 export async function generateResponse(
   userId: string,
@@ -65,6 +74,10 @@ export async function generateResponse(
   context?: { mood?: number; recentMessages?: number }
 ): Promise<string> {
   try {
+    if (!GEMINI_API_KEY) {
+      return "I'm here to help! However, the AI service is not configured. Please contact your administrator.";
+    }
+
     // Get conversation history
     const historyLimit = context?.recentMessages || 10;
     const history = await Message.find({ userId })
@@ -73,30 +86,30 @@ export async function generateResponse(
       .lean();
 
     // Build conversation context
-    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: 'system', content: ASSISTANT_SYSTEM_PROMPT },
-    ];
-
-    // Add recent history (oldest to newest)
+    let conversationHistory = '';
     history.reverse().forEach((msg) => {
-      messages.push({
-        role: msg.role === 'user' ? 'user' : 'assistant',
-        content: msg.text,
-      });
+      const role = msg.role === 'user' ? 'Student' : 'TalkItOut';
+      conversationHistory += `${role}: ${msg.text}\n`;
     });
 
     // Add current user message
     const sanitizedMessage = pseudonymizeText(userMessage, ALLOW_EXTERNAL_PII);
-    messages.push({ role: 'user', content: sanitizedMessage });
 
-    const response = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages,
-      temperature: 0.7,
-      max_tokens: 500,
-    });
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
-    let aiResponse = response.choices[0]?.message?.content?.trim();
+    const prompt = `${ASSISTANT_SYSTEM_PROMPT}
+
+Previous conversation:
+${conversationHistory}
+
+Student: ${sanitizedMessage}
+
+TalkItOut:`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let aiResponse = response.text().trim();
+
     if (!aiResponse) {
       return "I'm here to help! Can you tell me more about what's on your mind?";
     }
