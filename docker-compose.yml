@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: talkitout-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: talkitout
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./mongo-data:/data/db
+    networks:
+      - talkitout-network
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: talkitout-mongo-express
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    depends_on:
+      - mongo
+    networks:
+      - talkitout-network
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: talkitout-api
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      MONGO_URI: mongodb://mongo:27017/talkitout
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
+      ACCESS_TOKEN_TTL_MIN: 15
+      REFRESH_TOKEN_TTL_DAYS: 7
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:8081
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AI_MODEL: gpt-4o-mini
+      ALLOW_EXTERNAL_PII: false
+      CRISIS_EMERGENCY: 999
+      CRISIS_SOS_LINE: 1767
+      CRISIS_SOS_TEXT: "9151 1767"
+    depends_on:
+      - mongo
+    networks:
+      - talkitout-network
+    volumes:
+      - ./apps/api:/app/apps/api
+      - /app/node_modules
+      - /app/apps/api/node_modules
+
+networks:
+  talkitout-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
