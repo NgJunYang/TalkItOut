@@ -5,7 +5,7 @@ An AI-powered support system for Singapore students (ages 10-19) that helps with
 ## Features
 
 ### For Students
-- 💬 **AI Chat Companion** - Supportive, non-clinical study companion powered by GPT-4o-mini
+- 💬 **AI Chat Companion** - Supportive, non-clinical study companion powered by Google Gemini
 - 🎯 **Pomodoro Focus Timer** - Interactive focus sessions with breathing exercises
 - ✅ **Task Management** - Kanban-style task board with priorities and due dates
 - ❤️ **Daily Check-ins** - Mood tracking with sentiment analysis and trend visualization
@@ -33,7 +33,7 @@ An AI-powered support system for Singapore students (ages 10-19) that helps with
 | Backend | Node.js + Express + TypeScript |
 | Database | MongoDB + Mongoose |
 | Realtime | Socket.IO |
-| AI | OpenAI GPT-4o-mini |
+| AI | Google Gemini (gemini-pro) |
 | Auth | JWT (access + refresh tokens) |
 | Security | Helmet, CORS, Rate Limiting |
 
@@ -61,7 +61,7 @@ talkitout/
 - Node.js 18+
 - npm 9+
 - Docker & Docker Compose (optional)
-- OpenAI API key
+- Google Gemini API key (free tier available)
 
 ### 1. Clone and Install
 
@@ -78,8 +78,9 @@ npm install
 cp .env.example .env
 cp apps/web/.env.example apps/web/.env
 
-# Edit .env and add your OpenAI API key
-# OPENAI_API_KEY=sk-...
+# Edit .env and add your Google Gemini API key
+# Get free API key from: https://makersuite.google.com/app/apikey
+# GEMINI_API_KEY=AIza...
 ```
 
 ### 3. Start with Docker (Recommended)
