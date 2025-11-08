@@ -57,88 +57,92 @@ export const DashboardPage: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-ti-green-500 to-ti-green-600 rounded-2xl p-8 text-white shadow-card"
+        className="bg-gradient-to-r from-ti-green-500 to-ti-teal-500 rounded-3xl p-8 text-white shadow-card"
       >
-        <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}! 👋</h1>
-        <p className="text-white/90">Ready to make today productive?</p>
+        <h1 className="text-3xl font-extrabold mb-2">Hey {user?.name}! 🌱</h1>
+        <p className="text-white/90 text-lg">Your journey and growth</p>
       </motion.div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <QuickActionCard to="/app/focus" icon="🎯" label="Start Focus Session" />
-        <QuickActionCard to="/app/checkins" icon="❤️" label="Log Check-in" />
-        <QuickActionCard to="/app/chat" icon="💬" label="Chat with AI" />
-        <QuickActionCard to="/app/tasks" icon="✓" label="Add Task" />
-      </div>
-
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Mood Trend */}
+        {/* Chat with Bot */}
         <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-ti-ink-900">Mood Trend (Last 7 Days)</CardTitle>
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">💬</span>
+              <CardTitle className="text-ti-ink-900">Chat with the Bot Now</CardTitle>
+            </div>
+            <p className="text-sm text-ti-ink/60 mt-1">Get support anytime you need</p>
           </CardHeader>
           <CardContent>
-            {moodChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={moodChartData}>
-                  <XAxis dataKey="date" stroke="#9ca3af" />
-                  <YAxis domain={[1, 5]} stroke="#9ca3af" />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="mood"
-                    stroke="#22C55E"
-                    strokeWidth={2}
-                    dot={{ fill: '#22C55E', r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <p className="text-black/60 text-center py-8">
-                No check-ins yet. Start tracking your mood!
+            <div className="text-center py-8">
+              <p className="text-ti-ink/70 mb-4">
+                Talk to our AI assistant about anything on your mind. Get support, advice, or just someone to listen.
               </p>
-            )}
+              <Link to="/app/chat">
+                <Button size="lg" variant="primary" className="bg-gradient-to-r from-ti-green-500 to-ti-teal-500 text-white rounded-xl px-8 shadow-md hover:shadow-lg">
+                  Start Chatting
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Streaks & Stats */}
-        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+        {/* Growth Journey */}
+        <Card className="bg-gradient-to-br from-ti-green-500/10 to-white border-ti-beige-300 shadow-card rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-ti-ink-900">Your Progress</CardTitle>
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">🌱</span>
+              <CardTitle className="text-ti-ink-900">Your Growth Journey</CardTitle>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-ti-ink-800">Check-in Streak</span>
-              <Badge variant="positive">🔥 {checkInStreak} days</Badge>
+              <span className="text-ti-ink-800 flex items-center">
+                <span className="mr-2">💬</span> Conversations
+              </span>
+              <Badge variant="positive">{stats?.totalMessages || 0}</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-ti-ink-800">Focus Streak</span>
-              <Badge variant="info">⚡ {focusStreak} days</Badge>
+              <span className="text-ti-ink-800 flex items-center">
+                <span className="mr-2">❤️</span> Check-ins
+              </span>
+              <Badge variant="info">{stats?.totalCheckIns || 0}</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-ti-ink-800">Average Mood</span>
-              <Badge variant="neutral">{stats?.averageMood || 0}/5</Badge>
+              <span className="text-ti-ink-800 flex items-center">
+                <span className="mr-2">😊</span> Average Mood
+              </span>
+              <Badge variant="neutral">{stats?.averageMood?.toFixed(1) || 0}/5</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-ti-ink-800">Total Check-ins</span>
-              <Badge>{stats?.totalCheckIns || 0}</Badge>
+              <span className="text-ti-ink-800 flex items-center">
+                <span className="mr-2">🔥</span> Check-in Streak
+              </span>
+              <Badge variant="positive">{checkInStreak} days</Badge>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Today's Tasks */}
-      <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
-        <CardHeader className="flex items-center justify-between">
-          <CardTitle className="text-ti-ink-900">Today's Tasks</CardTitle>
-          <Link to="/app/tasks">
-            <Button size="sm" variant="ghost" className="text-ti-green-600 hover:bg-ti-green-50">
-              View All
-            </Button>
-          </Link>
-        </CardHeader>
-        <CardContent>
-          {todayTasks.length > 0 ? (
+      {/* Tasks - Helper Tool */}
+      {todayTasks.length > 0 && (
+        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+          <CardHeader className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-ti-ink-900 flex items-center">
+                <span className="mr-2">📝</span> Things on your mind
+              </CardTitle>
+              <p className="text-sm text-ti-ink/60 mt-1">
+                Let's tackle these together, one step at a time
+              </p>
+            </div>
+            <Link to="/app/tasks">
+              <Button size="sm" variant="ghost" className="text-ti-green-600 hover:bg-ti-green-50">
+                View All
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
             <div className="space-y-2">
               {todayTasks.slice(0, 5).map((task) => (
                 <div
@@ -157,11 +161,9 @@ export const DashboardPage: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : (
-            <p className="text-black/60 text-center py-8">No tasks due today. You're all set!</p>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

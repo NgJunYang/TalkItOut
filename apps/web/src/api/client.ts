@@ -79,6 +79,8 @@ export const taskAPI = {
   update: (id: string, data: any) => api.patch(`/tasks/${id}`, data),
   delete: (id: string) => api.delete(`/tasks/${id}`),
   updateStatus: (id: string, status: string) => api.patch(`/tasks/${id}/status`, { status }),
+  getStudySuggestions: (id: string) => api.get(`/tasks/${id}/study-suggestions`),
+  getSummary: () => api.get('/tasks/summary'),
 };
 
 // Chat API
@@ -108,6 +110,7 @@ export const riskAPI = {
   getFlags: (params?: any) => api.get('/risk/flags', { params }),
   getFlag: (id: string) => api.get(`/risk/flags/${id}`),
   updateFlag: (id: string, data: any) => api.patch(`/risk/flags/${id}`, data),
+  deleteFlag: (id: string) => api.delete(`/risk/flags/${id}`),
 };
 
 // Metrics API (counselor/admin)
@@ -127,4 +130,29 @@ export const adminAPI = {
   getHealth: () => api.get('/admin/health'),
   getConfig: () => api.get('/admin/config/public'),
   getStats: () => api.get('/admin/stats'),
+};
+
+// Counselor Messages API
+export const counselorMessagesAPI = {
+  // Counselor: Send message to student
+  sendMessage: (toUserId: string, text: string) =>
+    api.post('/counselor-messages', { toUserId, text }),
+  // Counselor: Get sent messages
+  getSentMessages: (toUserId?: string) =>
+    api.get('/counselor-messages/sent', { params: toUserId ? { toUserId } : {} }),
+  // Student: Get received messages
+  getReceivedMessages: () =>
+    api.get('/counselor-messages/received'),
+  // Student: Mark message as read
+  markAsRead: (id: string) =>
+    api.patch(`/counselor-messages/${id}/read`),
+  // Get unread count
+  getUnreadCount: () =>
+    api.get('/counselor-messages/unread-count'),
+  // Student: Reply to a message
+  replyToMessage: (messageId: string, text: string) =>
+    api.post(`/counselor-messages/${messageId}/reply`, { text }),
+  // Get conversation thread
+  getThread: (messageId: string) =>
+    api.get(`/counselor-messages/${messageId}/thread`),
 };

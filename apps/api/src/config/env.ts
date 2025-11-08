@@ -3,8 +3,7 @@ import path from 'path';
 
 // Load .env file from the api directory
 const envPath = path.resolve(process.cwd(), '.env');
-console.log('Loading .env from:', envPath);
-const result = dotenv.config({ path: envPath });
+const result = dotenv.config({ path: envPath, override: true });
 
 if (result.error) {
   console.error('Error loading .env file:', result.error);

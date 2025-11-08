@@ -109,4 +109,26 @@ router.patch(
   }
 );
 
+/**
+ * DELETE /risk/flags/:id - Delete a risk flag
+ */
+router.delete(
+  '/flags/:id',
+  authenticate,
+  authorize(USER_ROLES.COUNSELOR, USER_ROLES.ADMIN),
+  async (req: AuthRequest, res: Response, next) => {
+    try {
+      const flag = await RiskFlag.findByIdAndDelete(req.params.id);
+
+      if (!flag) {
+        throw new AppError(404, 'Risk flag not found');
+      }
+
+      res.json({ message: 'Risk flag deleted successfully', flag });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default router;

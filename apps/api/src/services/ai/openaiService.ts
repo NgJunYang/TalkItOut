@@ -20,7 +20,8 @@ if (!GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
 
-const AI_MODEL = process.env.AI_MODEL || 'gemini-pro';
+// Use gemini-2.0-flash-exp which is available in v1beta
+const AI_MODEL = process.env.AI_MODEL || 'gemini-2.0-flash-exp';
 const ALLOW_EXTERNAL_PII = process.env.ALLOW_EXTERNAL_PII === 'true';
 
 console.log('AI Configuration:', { model: AI_MODEL, allowPII: ALLOW_EXTERNAL_PII });
@@ -76,7 +77,7 @@ export async function analyzeText(text: string): Promise<AIClassification> {
 export async function generateResponse(
   userId: string,
   userMessage: string,
-  context?: { mood?: number; recentMessages?: number }
+  context?: { mood?: number; recentMessages?: number; userName?: string }
 ): Promise<string> {
   try {
     // Get conversation history
@@ -87,7 +88,13 @@ export async function generateResponse(
       .lean();
 
     // Build conversation context with system prompt
-    let conversationText = `${ASSISTANT_SYSTEM_PROMPT}\n\n`;
+    let conversationText = `${ASSISTANT_SYSTEM_PROMPT}`;
+
+    // Add user name if provided
+    if (context?.userName) {
+      conversationText += ` The student's name is ${context.userName}.`;
+    }
+    conversationText += '\n\n';
 
     // Add recent history (oldest to newest)
     history.reverse().forEach((msg) => {

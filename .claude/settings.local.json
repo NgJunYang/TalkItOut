@@ -13,7 +13,16 @@
       "Bash(timeout /t 8)",
       "Bash(netstat:*)",
       "Bash(taskkill:*)",
-      "Bash(ping:*)"
+      "Bash(ping:*)",
+      "Bash(dir:*)",
+      "Bash(net start MongoDB)",
+      "Bash(sc query:*)",
+      "Bash(mongod:*)",
+      "Bash(timeout /t 3)",
+      "Bash(cat:*)",
+      "Bash(git checkout:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

@@ -124,33 +124,61 @@ router.get(
       const daysAgo = new Date();
       daysAgo.setDate(daysAgo.getDate() - parseInt(days as string));
 
-      // Check-in trend
+      // Check-in metrics
       const checkIns = await CheckIn.find({
         userId,
         createdAt: { $gte: daysAgo },
       }).sort({ createdAt: 1 });
 
-      // Message activity
-      const messages = await Message.countDocuments({
-        userId,
-        role: 'user',
-        createdAt: { $gte: daysAgo },
-      });
+      const avgMood = checkIns.length > 0
+        ? checkIns.reduce((sum, c) => sum + c.mood, 0) / checkIns.length
+        : 0;
+
+      const lastCheckIn = checkIns.length > 0 ? checkIns[checkIns.length - 1].createdAt : null;
+
+      // Task metrics (placeholder - add Task model import if exists)
+      const Task = require('../models/Task').Task;
+      let taskMetrics = { total: 0, completed: 0 };
+      try {
+        const allTasks = await Task.find({ userId, createdAt: { $gte: daysAgo } });
+        taskMetrics = {
+          total: allTasks.length,
+          completed: allTasks.filter((t: any) => t.status === 'done').length,
+        };
+      } catch (err) {
+        // Task model might not exist
+        console.log('Task model not found, using default values');
+      }
 
       // Focus sessions
-      const sessions = await Session.countDocuments({
+      const sessions = await Session.find({
         userId,
         startedAt: { $gte: daysAgo },
         endedAt: { $ne: null },
       });
 
+      const totalMinutes = sessions.reduce((sum, s) => {
+        if (s.endedAt) {
+          const duration = (new Date(s.endedAt).getTime() - new Date(s.startedAt).getTime()) / 1000 / 60;
+          return sum + duration;
+        }
+        return sum;
+      }, 0);
+
       // Risk flags
       const flags = await RiskFlag.find({ userId }).sort({ createdAt: -1 });
 
       res.json({
-        checkIns,
-        messageCount: messages,
-        sessionCount: sessions,
+        checkIns: {
+          total: checkIns.length,
+          averageMood: Math.round(avgMood * 10) / 10,
+          lastCheckIn: lastCheckIn,
+        },
+        tasks: taskMetrics,
+        focus: {
+          totalSessions: sessions.length,
+          totalMinutes: Math.round(totalMinutes),
+        },
         riskFlags: flags,
       });
     } catch (error) {

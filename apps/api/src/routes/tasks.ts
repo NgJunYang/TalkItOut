@@ -4,6 +4,7 @@ import { createTaskSchema, updateTaskSchema } from '@talkitout/lib';
 import { validateBody } from '../middleware/validation';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
+import { generateStudySuggestions, generateTaskSummary } from '../services/ai/studyAssistantService';
 
 const router = Router();
 
@@ -43,6 +44,21 @@ router.get('/', authenticate, async (req: AuthRequest, res: Response, next) => {
     const tasks = await Task.find(query).sort({ createdAt: -1 });
 
     res.json({ tasks });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /tasks/summary - Get AI-generated summary of all user tasks
+ */
+router.get('/summary', authenticate, async (req: AuthRequest, res: Response, next) => {
+  try {
+    const tasks = await Task.find({ userId: req.userId }).sort({ createdAt: -1 });
+
+    const summary = await generateTaskSummary(tasks);
+
+    res.json(summary);
   } catch (error) {
     next(error);
   }
@@ -135,6 +151,28 @@ router.patch('/:id/status', authenticate, async (req: AuthRequest, res: Response
     }
 
     res.json(task);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /tasks/:id/study-suggestions - Get AI-generated study suggestions for a task
+ */
+router.get('/:id/study-suggestions', authenticate, async (req: AuthRequest, res: Response, next) => {
+  try {
+    const task = await Task.findOne({
+      _id: req.params.id,
+      userId: req.userId,
+    });
+
+    if (!task) {
+      throw new AppError(404, 'Task not found');
+    }
+
+    const suggestions = await generateStudySuggestions(task.title, task.subject);
+
+    res.json({ suggestions });
   } catch (error) {
     next(error);
   }

@@ -33,3 +33,6 @@ mongo-data/
 # Mobile
 apps/mobile/.expo/
 apps/mobile/dist/
+
+# Windows artifacts
+nul

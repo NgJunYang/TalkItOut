@@ -140,24 +140,39 @@ export const FocusPage: React.FC = () => {
   const progressPercent = ((totalTime - timeLeft) / totalTime) * 100;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Welcome Message */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-8"
+      >
+        <h2 className="text-2xl font-bold text-ti-ink-900 mb-3">
+          Take a moment for yourself 🧘
+        </h2>
+        <p className="text-lg text-ti-ink/70 max-w-2xl mx-auto">
+          When things feel busy, a little focused time can help. I'll be your timer—
+          you focus on what matters.
+        </p>
+      </motion.div>
+
       <div className="grid md:grid-cols-3 gap-6">
         {/* Timer */}
         <div className="md:col-span-2">
-          <Card>
+          <Card className="bg-gradient-to-br from-ti-green-500/5 to-white shadow-card">
             <CardContent className="pt-6">
               <div className="text-center">
-                <h2 className="text-xl font-semibold mb-2 capitalize">
+                <h2 className="text-xl font-semibold mb-2 capitalize text-ti-ink-900">
                   {sessionType === 'focus' ? '🎯 Focus Time' : sessionType === 'break' ? '☕ Short Break' : '🌟 Long Break'}
                 </h2>
-                <p className="text-ti-text-tertiary mb-8">
+                <p className="text-ti-ink/60 mb-8">
                   Cycle {currentCycle + 1} of {preferences.cyclesBeforeLongBreak}
                 </p>
 
                 {/* Breathing Circle */}
                 <motion.div
                   animate={{
-                    scale: isActive && !isPaused && sessionType === 'focus' ? [1, 1.1, 1] : 1,
+                    scale: isActive && !isPaused && sessionType === 'focus' ? [1, 1.05, 1] : 1,
                   }}
                   transition={{
                     duration: 4,
@@ -165,35 +180,43 @@ export const FocusPage: React.FC = () => {
                     ease: 'easeInOut',
                   }}
                   className="mx-auto mb-8 relative"
-                  style={{ width: 280, height: 280 }}
+                  style={{ width: 300, height: 300 }}
                 >
-                  <svg className="w-full h-full transform -rotate-90">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-ti-beige-50 to-ti-green-500/10 shadow-lg" />
+                  <svg className="w-full h-full transform -rotate-90 relative z-10">
+                    <defs>
+                      <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#22C55E" />
+                        <stop offset="100%" stopColor="#10B981" />
+                      </linearGradient>
+                    </defs>
                     <circle
-                      cx="140"
-                      cy="140"
+                      cx="150"
+                      cy="150"
                       r="130"
                       fill="none"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      className="text-ti-border"
+                      stroke="#E6D7B1"
+                      strokeWidth="8"
                     />
                     <circle
-                      cx="140"
-                      cy="140"
+                      cx="150"
+                      cy="150"
                       r="130"
                       fill="none"
-                      stroke="currentColor"
-                      strokeWidth="8"
+                      stroke="url(#timerGradient)"
+                      strokeWidth="12"
                       strokeDasharray={`${2 * Math.PI * 130}`}
                       strokeDashoffset={`${2 * Math.PI * 130 * (1 - progressPercent / 100)}`}
                       strokeLinecap="round"
-                      className="text-ti-primary-600 transition-all duration-1000"
+                      className="transition-all duration-1000"
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-6xl font-bold mb-2">{formatTime(timeLeft)}</div>
-                      {isPaused && <div className="text-ti-text-tertiary">Paused</div>}
+                      <div className="text-6xl font-extrabold text-ti-ink-900 mb-2">
+                        {formatTime(timeLeft)}
+                      </div>
+                      {isPaused && <div className="text-ti-ink/60 font-medium">Paused</div>}
                     </div>
                   </div>
                 </motion.div>
@@ -201,17 +224,27 @@ export const FocusPage: React.FC = () => {
                 {/* Controls */}
                 <div className="flex justify-center space-x-4">
                   {!isActive ? (
-                    <Button onClick={handleStart} size="lg">
-                      Start Focus Session
-                    </Button>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        onClick={handleStart}
+                        size="lg"
+                        className="bg-gradient-to-r from-ti-green-500 to-ti-teal-500 text-white shadow-md hover:shadow-lg"
+                      >
+                        Start Focus Session
+                      </Button>
+                    </motion.div>
                   ) : (
                     <>
-                      <Button onClick={handlePause} variant="secondary">
-                        {isPaused ? 'Resume' : 'Pause'}
-                      </Button>
-                      <Button onClick={handleStop} variant="danger">
-                        End Session
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button onClick={handlePause} variant="secondary">
+                          {isPaused ? 'Resume' : 'Pause'}
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button onClick={handleStop} variant="danger">
+                          End Session
+                        </Button>
+                      </motion.div>
                     </>
                   )}
                 </div>
@@ -222,40 +255,47 @@ export const FocusPage: React.FC = () => {
 
         {/* Info & Activities */}
         <div className="space-y-6">
-          <Card>
+          <Card className="bg-gradient-to-br from-ti-peach-100/30 to-white shadow-card">
             <CardHeader>
-              <CardTitle>Settings</CardTitle>
+              <CardTitle className="text-ti-ink-900">⚙️ Your Settings</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-ti-text-secondary">Focus:</span>
-                <span>{preferences.focusDuration} min</span>
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex justify-between p-2 bg-white rounded-lg">
+                <span className="text-ti-ink/70">Focus:</span>
+                <span className="font-semibold text-ti-ink-900">{preferences.focusDuration} min</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-ti-text-secondary">Break:</span>
-                <span>{preferences.breakDuration} min</span>
+              <div className="flex justify-between p-2 bg-white rounded-lg">
+                <span className="text-ti-ink/70">Break:</span>
+                <span className="font-semibold text-ti-ink-900">{preferences.breakDuration} min</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-ti-text-secondary">Long Break:</span>
-                <span>{preferences.longBreakDuration} min</span>
+              <div className="flex justify-between p-2 bg-white rounded-lg">
+                <span className="text-ti-ink/70">Long Break:</span>
+                <span className="font-semibold text-ti-ink-900">{preferences.longBreakDuration} min</span>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gradient-to-br from-ti-green-500/10 to-white shadow-card">
             <CardHeader>
-              <CardTitle>Quick Activities</CardTitle>
+              <CardTitle className="text-ti-ink-900">🌟 Quick Activities</CardTitle>
+              <p className="text-sm text-ti-ink/60 mt-1">Take a mindful break</p>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <Button variant="secondary" size="sm" className="w-full justify-start">
-                🧘 Box Breathing (4-4-4-4)
-              </Button>
-              <Button variant="secondary" size="sm" className="w-full justify-start">
-                🖐️ 5-4-3-2-1 Grounding
-              </Button>
-              <Button variant="secondary" size="sm" className="w-full justify-start">
-                📝 Capture a Thought
-              </Button>
+            <CardContent className="space-y-3">
+              <motion.div whileHover={{ scale: 1.02 }}>
+                <Button variant="secondary" size="sm" className="w-full justify-start text-left">
+                  🧘 Box Breathing (4-4-4-4)
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.02 }}>
+                <Button variant="secondary" size="sm" className="w-full justify-start text-left">
+                  🖐️ 5-4-3-2-1 Grounding
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.02 }}>
+                <Button variant="secondary" size="sm" className="w-full justify-start text-left">
+                  📝 Capture a Thought
+                </Button>
+              </motion.div>
             </CardContent>
           </Card>
         </div>

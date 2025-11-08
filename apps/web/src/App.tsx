@@ -13,6 +13,8 @@ import { CheckInsPage } from './pages/CheckIns';
 import { SettingsPage } from './pages/Settings';
 import { CounselorDashboard } from './pages/Counselor';
 import { CounselorStudentsPage } from './pages/CounselorStudents';
+import { RiskFlagsPage } from './pages/RiskFlags';
+import { MessagesPage } from './pages/Messages';
 import { Layout } from './components/Layout';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; counselorOnly?: boolean }> = ({
@@ -37,7 +39,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; counselorOnly?: bool
   }
 
   if (counselorOnly && user.role !== 'counselor' && user.role !== 'admin') {
-    return <Navigate to="/app/dashboard" replace />;
+    return <Navigate to="/app/chat" replace />;
   }
 
   return <>{children}</>;
@@ -60,11 +62,13 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       >
-        <Route path="dashboard" element={<DashboardPage />} />
+        <Route index element={<Navigate to="/app/dashboard" replace />} />
         <Route path="chat" element={<ChatPage />} />
+        <Route path="dashboard" element={<DashboardPage />} />
         <Route path="focus" element={<FocusPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="checkins" element={<CheckInsPage />} />
+        <Route path="messages" element={<MessagesPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
 
@@ -79,6 +83,7 @@ const AppRoutes: React.FC = () => {
       >
         <Route index element={<CounselorDashboard />} />
         <Route path="students" element={<CounselorStudentsPage />} />
+        <Route path="flags" element={<RiskFlagsPage />} />
       </Route>
 
       {/* 404 */}

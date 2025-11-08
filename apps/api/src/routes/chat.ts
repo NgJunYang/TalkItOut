@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import { Message } from '../models/Message';
 import { RiskFlag } from '../models/RiskFlag';
+import { User } from '../models/User';
 import { chatMessageSchema } from '@talkitout/lib';
 import { validateBody } from '../middleware/validation';
 import { authenticate, AuthRequest } from '../middleware/auth';
@@ -21,6 +22,9 @@ router.post(
   async (req: AuthRequest, res: Response, next) => {
     try {
       const { text } = req.body;
+
+      // Get user information
+      const user = await User.findById(req.userId);
 
       // Analyze user message
       const analysis = await analyzeText(text);
@@ -46,8 +50,10 @@ router.post(
         });
       }
 
-      // Generate AI response
-      let aiResponseText = await generateResponse(req.userId!, text);
+      // Generate AI response with user's name
+      let aiResponseText = await generateResponse(req.userId!, text, {
+        userName: user?.name,
+      });
 
       // Add crisis message if needed
       aiResponseText = addCrisisMessageIfNeeded(aiResponseText, analysis.severity);

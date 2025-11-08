@@ -15,6 +15,8 @@ import riskRoutes from './routes/risk';
 import metricsRoutes from './routes/metrics';
 import privacyRoutes from './routes/privacy';
 import adminRoutes from './routes/admin';
+import voiceRoutes from './routes/voice';
+import counselorMessagesRoutes from './routes/counselorMessages';
 
 export function createApp() {
   const app = express();
@@ -49,6 +51,8 @@ export function createApp() {
   app.use('/metrics', metricsRoutes);
   app.use('/privacy', privacyRoutes);
   app.use('/admin', adminRoutes);
+  app.use('/voice', voiceRoutes);
+  app.use('/counselor-messages', counselorMessagesRoutes);
 
   // Health check at root
   app.get('/', (req, res) => {

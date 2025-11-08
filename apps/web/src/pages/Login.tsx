@@ -33,8 +33,8 @@ export const LoginPage: React.FC = () => {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-ti-green-600 mb-2">TalkItOut</h1>
-          <p className="text-ti-ink-900">Your study companion</p>
+          <h1 className="text-4xl font-bold text-ti-black-600 mb-2">Talk.ItOut</h1>
+          <p className="text-ti-ink-900">Your AI-powered support system</p>
         </div>
 
         <div className="bg-white border border-ti-beige-300 rounded-2xl p-8 shadow-card">

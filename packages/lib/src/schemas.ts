@@ -33,8 +33,23 @@ export const createTaskSchema = z.object({
     z.string().optional()
   ),
   dueAt: z.preprocess(
-    (val) => (val === '' ? undefined : val),
-    z.string().datetime().optional()
+    (val) => {
+      if (val === '' || val === null || val === undefined) return undefined;
+      // Convert datetime-local format to ISO datetime
+      if (typeof val === 'string' && !val.includes('T')) {
+        return undefined; // Invalid format
+      }
+      // If it's already a valid date string, ensure it has timezone
+      if (typeof val === 'string' && val.includes('T')) {
+        // datetime-local format: 2025-01-15T14:30
+        // Add seconds and timezone if missing
+        if (!val.includes('Z') && !val.includes('+') && !val.includes(':00.')) {
+          return val + ':00.000Z';
+        }
+      }
+      return val;
+    },
+    z.string().optional()
   ),
   priority: z.enum([TASK_PRIORITY.LOW, TASK_PRIORITY.MED, TASK_PRIORITY.HIGH]).optional(),
 });

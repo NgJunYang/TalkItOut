@@ -9,20 +9,20 @@ html, body, #root {
 }
 
 :root {
-  /* Bright green + beige theme */
-  --bg: #F7F0E1; /* ti.beige.100 */
-  --surface: #ffffff;
-  --ink: #0F172A; /* ti.ink.900 */
-  --brand: #22C55E; /* ti.green.500 */
+  /* Warm brown + beige theme */
+  --bg: #F5F1EA; /* ti.beige.100 - warm cream */
+  --surface: #FBF9F6; /* ti.beige.50 - lighter cream */
+  --ink: #3D2817; /* ti.brown.500 - dark chocolate brown */
+  --brand: #22C55E; /* ti.green.500 - kept for accents */
 
   /* Light mode colors (legacy compatibility) */
-  --ti-bg: #F7F0E1;
-  --ti-surface: #ffffff;
-  --ti-surface-hover: #FFF9F0;
-  --ti-border: #E6D7B1;
-  --ti-text-primary: #0f172a;
-  --ti-text-secondary: #475569;
-  --ti-text-tertiary: #94a3b8;
+  --ti-bg: #F5F1EA;
+  --ti-surface: #FBF9F6;
+  --ti-surface-hover: #EDE7DC;
+  --ti-border: #E6DDCE;
+  --ti-text-primary: #3D2817; /* brown instead of blue-gray */
+  --ti-text-secondary: #9F8B6F; /* medium brown */
+  --ti-text-tertiary: #BAAA94; /* light brown */
 }
 
 .dark {
@@ -88,6 +88,85 @@ body {
   outline-offset: 2px;
 }
 
+/* Voice UI Animations */
+@keyframes pulse-recording {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes equalizer-bar {
+  0%, 100% {
+    height: 4px;
+  }
+  50% {
+    height: 16px;
+  }
+}
+
+@keyframes fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes speaking-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+}
+
+.equalizer {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 16px;
+}
+
+.equalizer-bar {
+  width: 3px;
+  background: currentColor;
+  border-radius: 2px;
+  animation: equalizer-bar 1s ease-in-out infinite;
+}
+
+.equalizer-bar:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.equalizer-bar:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.equalizer-bar:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.equalizer-bar:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.speaking-indicator {
+  animation: speaking-pulse 2s ease-in-out infinite;
+}
+
+.recording-pulse {
+  animation: pulse-recording 1.5s ease-in-out infinite;
+}
+
 /* Larger UI elements */
 button,
 input,
@@ -117,7 +196,11 @@ a {
   margin: -0.25rem;
 }
 
-/* Headings larger */
+/* Headings larger with Nunito Sans */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Nunito Sans", Inter, system-ui, sans-serif;
+}
+
 h1 {
   font-size: 2.5rem; /* 40px */
   line-height: 1.2;
@@ -146,4 +229,22 @@ h4 {
 svg {
   width: 1.5rem; /* 24px default */
   height: 1.5rem;
+}
+
+/* Add breathing animation for focus mode */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+.breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #22C55E 0%, #10B981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

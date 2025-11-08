@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardHeader, CardTitle, CardContent, Badge, Input } from '@talkitout/ui';
-import { userAPI, metricsAPI } from '../api/client';
+import { Card, CardHeader, CardTitle, CardContent, Badge, Input, Button, TextArea } from '@talkitout/ui';
+import { userAPI, metricsAPI, counselorMessagesAPI } from '../api/client';
 import toast from 'react-hot-toast';
+import { Send } from 'lucide-react';
 
 interface Student {
   _id: string;
@@ -32,12 +33,36 @@ interface StudentMetrics {
   };
 }
 
+interface Message {
+  _id: string;
+  fromUserId: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+  toUserId: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+  text: string;
+  read: boolean;
+  createdAt: string;
+  threadId?: string;
+}
+
 export const CounselorStudentsPage: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [studentMetrics, setStudentMetrics] = useState<StudentMetrics | null>(null);
   const [isLoadingMetrics, setIsLoadingMetrics] = useState(false);
+  const [messageText, setMessageText] = useState('');
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [conversationMessages, setConversationMessages] = useState<Message[]>([]);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   useEffect(() => {
     loadStudents();
@@ -64,9 +89,39 @@ export const CounselorStudentsPage: React.FC = () => {
     }
   };
 
+  const loadConversation = async (studentId: string) => {
+    setIsLoadingMessages(true);
+    try {
+      // Get messages sent by counselor to this student
+      const sentResponse = await counselorMessagesAPI.getSentMessages(studentId);
+      const sentMessages = sentResponse.data.messages || [];
+
+      // Get all messages received by counselor
+      const receivedResponse = await counselorMessagesAPI.getReceivedMessages();
+      const allReceivedMessages = receivedResponse.data.messages || [];
+
+      // Filter messages received from this specific student
+      const receivedMessages = allReceivedMessages.filter(
+        (msg: any) => msg.fromUserId._id === studentId
+      );
+
+      // Combine and sort by date (oldest first for chat display)
+      const allMessages = [...sentMessages, ...receivedMessages].sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+
+      setConversationMessages(allMessages);
+    } catch (error) {
+      console.error('Failed to load conversation:', error);
+    } finally {
+      setIsLoadingMessages(false);
+    }
+  };
+
   const handleStudentClick = (student: Student) => {
     setSelectedStudent(student);
     loadStudentMetrics(student._id);
+    loadConversation(student._id);
   };
 
   const filteredStudents = students.filter((student) =>
@@ -87,6 +142,23 @@ export const CounselorStudentsPage: React.FC = () => {
     if (mood >= 2.5) return '😐';
     if (mood >= 1.5) return '😟';
     return '😢';
+  };
+
+  const handleSendMessage = async () => {
+    if (!messageText.trim() || !selectedStudent || isSendingMessage) return;
+
+    setIsSendingMessage(true);
+    try {
+      await counselorMessagesAPI.sendMessage(selectedStudent._id, messageText);
+      toast.success(`Message sent to ${selectedStudent.name}`);
+      setMessageText('');
+      loadConversation(selectedStudent._id); // Reload conversation after sending
+    } catch (error: any) {
+      console.error('Failed to send message:', error);
+      toast.error(error?.response?.data?.message || 'Failed to send message');
+    } finally {
+      setIsSendingMessage(false);
+    }
   };
 
   return (
@@ -311,6 +383,95 @@ export const CounselorStudentsPage: React.FC = () => {
                       </CardContent>
                     </Card>
                   )}
+
+                  {/* Message Student Card */}
+                  <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+                    <CardHeader>
+                      <CardTitle className="text-ti-ink-900 flex items-center gap-2">
+                        <Send className="w-5 h-5" />
+                        Conversation with {selectedStudent.name}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {/* Conversation History */}
+                        {isLoadingMessages ? (
+                          <div className="text-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-ti-green-500 mx-auto mb-2" />
+                            <p className="text-sm text-ti-ink/60">Loading conversation...</p>
+                          </div>
+                        ) : conversationMessages.length > 0 ? (
+                          <div className="bg-ti-beige-50 rounded-xl p-4 max-h-[400px] overflow-y-auto space-y-3">
+                            <p className="text-xs text-ti-ink/60 mb-3 text-center">
+                              Message history with {selectedStudent.name}
+                            </p>
+                            {conversationMessages.map((msg) => {
+                              const isFromCounselor = msg.fromUserId.role === 'counselor' || msg.fromUserId.role === 'admin';
+                              return (
+                                <div
+                                  key={msg._id}
+                                  className={`flex ${isFromCounselor ? 'justify-end' : 'justify-start'}`}
+                                >
+                                  <div
+                                    className={`max-w-[80%] p-3 rounded-xl ${
+                                      isFromCounselor
+                                        ? 'bg-ti-teal-500 text-white'
+                                        : 'bg-white border-2 border-ti-green-200 text-ti-ink-900'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <span
+                                        className={`text-xs font-medium ${
+                                          isFromCounselor ? 'text-white/90' : 'text-ti-ink/70'
+                                        }`}
+                                      >
+                                        {msg.fromUserId.name}
+                                      </span>
+                                      <span
+                                        className={`text-xs ${
+                                          isFromCounselor ? 'text-white/70' : 'text-ti-ink/50'
+                                        }`}
+                                      >
+                                        {new Date(msg.createdAt).toLocaleString()}
+                                      </span>
+                                    </div>
+                                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="bg-ti-beige-50 rounded-xl p-8 text-center">
+                            <p className="text-sm text-ti-ink/60">
+                              No messages yet. Start the conversation with {selectedStudent.name}!
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Message Input */}
+                        <div className="pt-2 border-t-2 border-ti-beige-200">
+                          <TextArea
+                            value={messageText}
+                            onChange={(e) => setMessageText(e.target.value)}
+                            placeholder={`Write a message to ${selectedStudent.name}...`}
+                            className="min-h-[120px] bg-white border-2 border-ti-beige-300 rounded-xl focus:ring-2 focus:ring-ti-green-500 focus:border-ti-green-500"
+                          />
+                          <div className="flex justify-end mt-3">
+                            <Button
+                              onClick={handleSendMessage}
+                              disabled={!messageText.trim() || isSendingMessage}
+                              isLoading={isSendingMessage}
+                              className="bg-gradient-to-r from-ti-green-500 to-ti-teal-500 text-white rounded-xl px-6 shadow-md hover:shadow-lg"
+                            >
+                              <Send className="w-4 h-4 mr-2" />
+                              Send Message
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </>
               ) : null}
             </div>

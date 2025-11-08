@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, Button, Input } from '@talkitout/ui';
 import { useAuth } from '../contexts/AuthContext';
 import { userAPI, privacyAPI } from '../api/client';
+import { getUserPreferences, saveUserPreferences } from '../store/userPrefs';
+import { getVoiceConfig, isVoiceEnabled } from '../lib/voiceClient';
 import toast from 'react-hot-toast';
 
 interface PomodoroSettings {
@@ -22,6 +24,24 @@ export const SettingsPage: React.FC = () => {
     }
   );
 
+  // Voice settings
+  const [voicePrefs, setVoicePrefs] = useState(getUserPreferences());
+  const [voiceConfig, setVoiceConfig] = useState({
+    enabled: false,
+    defaultVoiceId: 'Rachel',
+    maxRecordingSeconds: 60,
+  });
+
+  useEffect(() => {
+    // Load voice config
+    const config = getVoiceConfig();
+    setVoiceConfig({
+      enabled: isVoiceEnabled(),
+      defaultVoiceId: config.defaultVoiceId || 'Rachel',
+      maxRecordingSeconds: config.maxRecordingSeconds || 60,
+    });
+  }, []);
+
   const handleUpdatePomodoro = async () => {
     try {
       await userAPI.updateProfile({ preferences: { pomodoro } });
@@ -29,6 +49,15 @@ export const SettingsPage: React.FC = () => {
       toast.success('Settings saved!');
     } catch (error) {
       toast.error('Failed to save settings');
+    }
+  };
+
+  const handleUpdateVoiceSettings = () => {
+    try {
+      saveUserPreferences(voicePrefs);
+      toast.success('Voice settings saved!');
+    } catch (error) {
+      toast.error('Failed to save voice settings');
     }
   };
 
@@ -98,6 +127,50 @@ export const SettingsPage: React.FC = () => {
               max="10"
             />
             <Button onClick={handleUpdatePomodoro} className="bg-ti-green-500 hover:bg-ti-green-600 text-white">Save Settings</Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+          <CardHeader>
+            <CardTitle className="text-ti-ink-900 flex items-center gap-2">
+              <span>🎤</span> Voice Settings
+            </CardTitle>
+            {!voiceConfig.enabled && (
+              <p className="text-sm text-amber-600 mt-2">
+              </p>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-ti-beige-50 rounded-xl">
+                <div>
+                  <h4 className="font-medium text-ti-ink-900">Auto-play assistant voice</h4>
+                  <p className="text-sm text-ti-ink-700">
+                    Automatically play audio for assistant responses
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={voicePrefs.autoPlayVoice}
+                    onChange={(e) =>
+                      setVoicePrefs((p) => ({ ...p, autoPlayVoice: e.target.checked }))
+                    }
+                    disabled={!voiceConfig.enabled}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-ti-beige-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-ti-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-ti-beige-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-ti-green-500"></div>
+                </label>
+              </div>
+
+              <Button
+                onClick={handleUpdateVoiceSettings}
+                disabled={!voiceConfig.enabled}
+                className="bg-ti-green-500 hover:bg-ti-green-600 text-white"
+              >
+                Save Voice Settings
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
