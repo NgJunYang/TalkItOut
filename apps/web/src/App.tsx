@@ -16,6 +16,7 @@ import { CounselorStudentsPage } from './pages/CounselorStudents';
 import { RiskFlagsPage } from './pages/RiskFlags';
 import { MessagesPage } from './pages/Messages';
 import { Layout } from './components/Layout';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; counselorOnly?: boolean }> = ({
   children,
@@ -94,24 +95,30 @@ const AppRoutes: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <SocketProvider>
-          <AppRoutes />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 3000,
-              style: {
-                background: 'var(--ti-surface)',
-                color: 'var(--ti-text-primary)',
-                border: '1px solid var(--ti-border)',
-              },
-            }}
-          />
-        </SocketProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <div className="app-shell min-h-screen bg-bg text-text transition-colors duration-300">
+        <BrowserRouter>
+          <AuthProvider>
+            <SocketProvider>
+              <AppRoutes />
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: 'var(--surface)',
+                    color: 'var(--text)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '16px',
+                    boxShadow: 'var(--shadow-soft)',
+                  },
+                }}
+              />
+            </SocketProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </div>
+    </ThemeProvider>
   );
 };
 

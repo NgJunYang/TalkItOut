@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Badge } from '@talkitout/ui';
 import { formatRelativeTime } from '@talkitout/ui';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { speakWithBrowser } from '../lib/voiceClient';
@@ -20,16 +19,22 @@ interface MessageBubbleProps {
   message: Message;
   index: number;
   autoPlay?: boolean;
+  onSpeechStateChange?: (isSpeaking: boolean) => void;
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, index, autoPlay }) => {
+export const MessageBubble: React.FC<MessageBubbleProps> = ({
+  message,
+  index,
+  autoPlay,
+  onSpeechStateChange,
+}) => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isSpeakingThis, setIsSpeakingThis] = useState(false);
 
-  const getSentimentVariant = (sentiment?: string) => {
-    if (sentiment === 'pos') return 'positive';
-    if (sentiment === 'neg') return 'negative';
-    return 'neutral';
+  const notifySpeechState = (state: boolean) => {
+    if (message.role === 'assistant') {
+      onSpeechStateChange?.(state);
+    }
   };
 
   const handleSpeak = async () => {
@@ -38,21 +43,24 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, index, au
       window.speechSynthesis.cancel();
       setIsSpeakingThis(false);
       setIsPlayingAudio(false);
+      notifySpeechState(false);
       return;
     }
 
     // Otherwise, start speaking
     setIsPlayingAudio(true);
     setIsSpeakingThis(true);
+    notifySpeechState(true);
 
     try {
       await speakWithBrowser(message.text);
-      setIsSpeakingThis(false);
-      setIsPlayingAudio(false);
     } catch (error) {
       console.error('TTS error:', error);
+      toast.error('Unable to play audio right now.');
+    } finally {
       setIsSpeakingThis(false);
       setIsPlayingAudio(false);
+      notifySpeechState(false);
     }
   };
 
@@ -76,31 +84,31 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, index, au
       className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
     >
       <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+        className={`max-w-[80%] rounded-[26px] px-5 py-3.5 shadow-soft ${
           message.role === 'user'
-            ? 'bg-ti-beige-100 text-ti-ink-900 border-2 border-ti-beige-300'
-            : 'bg-ti-green-500/15 border-2 border-ti-green-500/40 text-ti-ink'
+            ? 'border border-[#ead9c3] bg-[#fff7ec] text-[#2f2015]'
+            : 'border border-[#b28757] bg-[#c9a375] text-[#1f130c]'
         }`}
       >
         <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
-        <div className="flex items-center justify-between mt-2 gap-2">
-          <span className="text-xs opacity-70">{formatRelativeTime(message.createdAt)}</span>
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <span className="text-xs text-[#70563d] opacity-80">{formatRelativeTime(message.createdAt)}</span>
           <div className="flex items-center gap-2">
             {message.role === 'user' && message.sentiment && (
-              <Badge variant={getSentimentVariant(message.sentiment)} className="text-xs">
+              <span className="rounded-full border border-[#ead9c3] bg-white/60 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-[#8b6947]">
                 {message.sentiment}
-              </Badge>
+              </span>
             )}
             {/* Speaker button for assistant messages */}
             {message.role === 'assistant' && (
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.94 }}
                 onClick={handleSpeak}
-                className={`p-1.5 rounded-lg transition-colors ${
+                className={`rounded-full border p-1.5 transition ${
                   isSpeakingThis
-                    ? 'bg-ti-green-500 text-white'
-                    : 'bg-ti-beige-100 text-ti-ink-700 hover:bg-ti-green-100'
+                    ? 'border-[#8b6947] bg-[#8b6947] text-white'
+                    : 'border-[#ead9c3] bg-[#fff4e4] text-[#6b4b32]'
                 }`}
                 aria-label={isSpeakingThis ? 'Stop speaking' : 'Play audio'}
                 disabled={isPlayingAudio && !isSpeakingThis}

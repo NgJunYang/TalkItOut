@@ -5,32 +5,27 @@ import { Header } from './Header';
 
 export const Layout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-hero-soft">
-      {/* Header */}
+    <div className="flex min-h-screen flex-col bg-bg text-text transition-colors duration-300">
       <Header />
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1 px-4 py-8 md:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.35, ease: 'easeInOut' }}
+          className="mx-auto w-full max-w-6xl space-y-8"
         >
           <Outlet />
         </motion.div>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-white/80 backdrop-blur-md border-t border-ti-beige-300 mt-auto py-6">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-sm text-ti-ink/70">
-            <p className="mb-2">
-              <strong className="text-ti-ink">Crisis Support:</strong> Emergency 999 • Samaritans of Singapore 1767 • SOS CareText 9151 1767
-            </p>
-            <p>TalkItOut is a support tool, not a crisis service or medical provider</p>
-          </div>
+      <footer className="border-t border-border/70 bg-surface/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-sm text-muted md:flex-row md:items-center md:justify-between md:px-8">
+          <p className="font-medium text-text">
+            Crisis Support: Emergency 999 · Samaritans of Singapore 1767 · SOS CareText 9151 1767
+          </p>
+          <p>Talk.IO is a support tool, not a crisis service or medical provider.</p>
         </div>
       </footer>
     </div>
   );
 };
+

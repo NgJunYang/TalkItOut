@@ -186,8 +186,8 @@ export const FocusPage: React.FC = () => {
                   <svg className="w-full h-full transform -rotate-90 relative z-10">
                     <defs>
                       <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#22C55E" />
-                        <stop offset="100%" stopColor="#10B981" />
+                        <stop offset="0%" stopColor="#c9a375" />
+                        <stop offset="100%" stopColor="#a87b4e" />
                       </linearGradient>
                     </defs>
                     <circle

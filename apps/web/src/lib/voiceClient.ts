@@ -126,6 +126,17 @@ export function stopSpeaking(): void {
 }
 
 /**
+ * Stop any kind of speech output (API audio or browser TTS).
+ */
+export function stopAllSpeech(): void {
+  stopSpeaking();
+
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+/**
  * Check if audio is currently playing
  */
 export function isSpeaking(): boolean {

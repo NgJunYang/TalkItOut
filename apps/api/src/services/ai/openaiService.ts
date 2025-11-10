@@ -23,6 +23,8 @@ const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
 // Use gemini-2.0-flash-exp which is available in v1beta
 const AI_MODEL = process.env.AI_MODEL || 'gemini-2.0-flash-exp';
 const ALLOW_EXTERNAL_PII = process.env.ALLOW_EXTERNAL_PII === 'true';
+const SHORT_RESPONSE_GUIDELINE =
+  'Keep every reply brief—no more than four sentences total. Use compact sentences, focus on one actionable next step, and end with a single gentle follow-up question.';
 
 console.log('AI Configuration:', { model: AI_MODEL, allowPII: ALLOW_EXTERNAL_PII });
 
@@ -94,7 +96,7 @@ export async function generateResponse(
     if (context?.userName) {
       conversationText += ` The student's name is ${context.userName}.`;
     }
-    conversationText += '\n\n';
+    conversationText += ` ${SHORT_RESPONSE_GUIDELINE}\n\n`;
 
     // Add recent history (oldest to newest)
     history.reverse().forEach((msg) => {
@@ -111,8 +113,8 @@ export async function generateResponse(
     const result = await model.generateContent({
       contents: [{ role: 'user', parts: [{ text: conversationText }] }],
       generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1000, // Increased to accommodate thinking tokens in Gemini 2.5
+        temperature: 0.6,
+        maxOutputTokens: 450,
       },
     });
 

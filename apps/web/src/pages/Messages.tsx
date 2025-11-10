@@ -261,7 +261,9 @@ export const MessagesPage: React.FC = () => {
                 ) : (
                   <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto">
                     {threadMessages.map((msg) => {
-                      const isFromMe = msg.from._id === user?._id;
+                      const messageAuthorId = (msg.from as any)?.id || (msg.from as any)?._id || msg.from;
+                      const currentUserId = user?.id || (user as any)?._id;
+                      const isFromMe = messageAuthorId && currentUserId ? messageAuthorId === currentUserId : false;
                       return (
                         <div
                           key={msg._id}

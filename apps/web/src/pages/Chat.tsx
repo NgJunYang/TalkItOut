@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button, TextArea } from '@talkitout/ui';
 import { chatAPI, checkInAPI } from '../api/client';
 import toast from 'react-hot-toast';
-import { Mic, MicOff, Send } from 'lucide-react';
+import { Mic, MicOff, Send, VolumeX, MessageCircle } from 'lucide-react';
 import { MessageBubble } from '../components/MessageBubble';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -11,6 +11,7 @@ import {
   isVoiceEnabled,
   startBrowserRecognition,
   isBrowserSpeechSupported,
+  stopAllSpeech,
 } from '../lib/voiceClient';
 
 export const ChatPage: React.FC = () => {
@@ -25,6 +26,7 @@ export const ChatPage: React.FC = () => {
   const [showMoodSelector, setShowMoodSelector] = useState(false);
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   const [lastMessageId, setLastMessageId] = useState<string | null>(null);
+  const [isAssistantSpeaking, setIsAssistantSpeaking] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -233,6 +235,11 @@ export const ChatPage: React.FC = () => {
     }
   };
 
+  const handleStopSpeaking = () => {
+    stopAllSpeech();
+    setIsAssistantSpeaking(false);
+  };
+
   const suggestedPrompts = [
     "I'm feeling stressed today",
     'Can we just talk?',
@@ -245,50 +252,49 @@ export const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="bg-white border-2 border-ti-beige-300 rounded-3xl overflow-hidden shadow-card flex flex-col" style={{ height: 'calc(100vh - 180px)', minHeight: '500px' }}>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div
+        className="flex flex-col overflow-hidden rounded-[32px] border border-border bg-surface shadow-soft"
+        style={{ height: 'calc(100vh - 180px)', minHeight: '520px' }}
+      >
         {/* Header */}
-        <div className="border-b-2 border-ti-beige-300 p-4 bg-gradient-to-r from-ti-green-500/5 to-ti-teal-500/5 shrink-0">
+        <div className="border-b border-border/70 bg-[#f3e5d3] px-6 py-5">
           <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-bold text-ti-ink-900 flex items-center">
-                <span className="mr-2">💬</span> Let's Talk
+            <div className="flex-1">
+              <p className="text-[0.65rem] uppercase tracking-[0.35em] text-black">Talk</p>
+              <h1 className="mt-1 flex items-center gap-2 text-3xl font-semibold text-text">
+                <MessageCircle className="h-6 w-6 text-brown1" />
+                Let's Talk
               </h1>
-              <p className="text-sm text-ti-ink/70 mt-1">I'm here to listen and support you</p>
+              <p className="mt-1 text-sm text-black/70">I'm here to listen and support you.</p>
             </div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={handleClearChat}
-                className="shrink-0 text-red-600 hover:bg-red-50 px-3 py-2 text-lg"
+                className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-text hover:bg-beige2/70"
                 title="Clear all chat messages"
               >
-                🗑️
+                Clear chat
               </Button>
             </motion.div>
           </div>
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
-          {/* Mood Selector - First Message */}
+        <div className="flex-1 space-y-4 overflow-y-auto bg-[#fdf6ec] px-6 py-6">
           {showMoodSelector && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex justify-start mb-6"
-            >
-              <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-ti-green-500/15 border-2 border-ti-green-500/40">
-                <p className="whitespace-pre-wrap leading-relaxed mb-4"> What's your mood like today?</p>
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
+              <div className="max-w-[80%] rounded-3xl border border-border bg-white/85 px-5 py-4 shadow-soft">
+                <p className="mb-4 text-base font-semibold text-black">What's your mood like today?</p>
                 <div className="flex flex-wrap gap-2">
                   {moods.map((mood) => (
                     <motion.button
                       key={mood.value}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
                       onClick={() => handleMoodSelect(mood.value, mood.label)}
-                      className="px-4 py-2 bg-white border-2 border-ti-beige-300 rounded-full text-sm font-medium hover:border-ti-green-500 hover:bg-ti-green-50 transition-all flex items-center gap-2"
+                      className="flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-text transition hover:bg-beige2/70 focus-visible:ring-2 focus-visible:ring-beige1"
                     >
                       <span className="text-lg">{mood.emoji}</span>
                       <span>{mood.label}</span>
@@ -300,27 +306,27 @@ export const ChatPage: React.FC = () => {
           )}
 
           {messages.length === 0 && !showMoodSelector && (
-            <div className="text-center py-12 max-w-2xl mx-auto">
+            <div className="mx-auto max-w-2xl rounded-[28px] border border-border bg-white/90 px-8 py-12 text-center shadow-soft">
               <motion.div
-                className="text-7xl mb-6"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                className="mb-6 text-6xl"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
               >
-                💬
+                ??
               </motion.div>
-              <h2 className="text-2xl font-bold text-ti-ink-900 mb-3">Hey {user?.name}! I'm here for you 👋</h2>
-              <p className="text-lg text-ti-ink/70 mb-6">
-                Whether you need to talk about your day, work through something tough, or just chat—I'm all ears.
-                What's on your mind?
+              <h2 className="mb-3 text-2xl font-semibold text-text">Hi {user?.name}! I'm right here.</h2>
+              <p className="mb-6 text-base text-muted">
+                Whether you need to talk about your day, work through something tough, or just breathe for a moment,
+                this space is yours.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 {suggestedPrompts.map((prompt) => (
                   <motion.button
                     key={prompt}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => handlePromptClick(prompt)}
-                    className="px-6 py-3 bg-gradient-to-r from-ti-green-500 to-ti-teal-500 text-white rounded-full font-medium shadow-md hover:shadow-lg transition-all"
+                    className="rounded-full border border-border bg-surface px-6 py-3 text-sm font-semibold text-text shadow-soft hover:bg-beige2/70"
                   >
                     {prompt}
                   </motion.button>
@@ -340,6 +346,7 @@ export const ChatPage: React.FC = () => {
                   message={message}
                   index={idx}
                   autoPlay={shouldAutoPlay}
+                  onSpeechStateChange={setIsAssistantSpeaking}
                 />
               );
             })}
@@ -347,17 +354,11 @@ export const ChatPage: React.FC = () => {
 
           {isLoading && !isRecordingAudio && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-              <div className="bg-ti-surface-hover rounded-xl p-4">
+              <div className="rounded-2xl border border-border bg-white/80 px-4 py-3 shadow-soft">
                 <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-ti-text-tertiary rounded-full animate-bounce" />
-                  <div
-                    className="w-2 h-2 bg-ti-text-tertiary rounded-full animate-bounce"
-                    style={{ animationDelay: '0.1s' }}
-                  />
-                  <div
-                    className="w-2 h-2 bg-ti-text-tertiary rounded-full animate-bounce"
-                    style={{ animationDelay: '0.2s' }}
-                  />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-brown1/60" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-brown1/40" style={{ animationDelay: '0.1s' }} />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-brown1/20" style={{ animationDelay: '0.2s' }} />
                 </div>
               </div>
             </motion.div>
@@ -366,62 +367,77 @@ export const ChatPage: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
-        <div className="border-t-2 border-ti-beige-300 p-4 bg-ti-beige-50/30 shrink-0">
-          <div className="flex space-x-3">
-            {/* Microphone Button - Always visible and clickable */}
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={handleMicClick}
-                disabled={false}
-                className={`rounded-xl px-4 ${
-                  isRecordingAudio
-                    ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse'
-                    : 'bg-ti-green-500 hover:bg-ti-green-600 text-white'
-                }`}
-                aria-label={isRecordingAudio ? 'Stop recording' : 'Start recording'}
-              >
-                {isRecordingAudio ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-              </Button>
-            </motion.div>
+        <div className="border-t border-border/70 bg-[#f3e5d3] px-4 py-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-end gap-3">
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}>
+                <Button
+                  onClick={handleMicClick}
+                  disabled={false}
+                  className={`rounded-2xl px-4 py-3 text-text shadow-soft ${
+                    isRecordingAudio
+                      ? 'bg-[#b58758] text-white'
+                      : 'bg-[var(--beige-1)] text-[#2f2015] hover:brightness-110'
+                  }`}
+                  aria-label={isRecordingAudio ? 'Stop recording' : 'Start recording'}
+                >
+                  {isRecordingAudio ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                </Button>
+              </motion.div>
 
-            <TextArea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              placeholder={isRecordingAudio ? 'Recording... tap mic to stop' : "Share what's on your mind..."}
-              className="flex-1 min-h-[60px] max-h-[120px] bg-white border-2 border-ti-beige-300 rounded-xl focus:ring-2 focus:ring-ti-green-500 focus:border-ti-green-500"
-              disabled={isLoading || isRecordingAudio}
-            />
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={() => handleSend()}
-                disabled={!input.trim() || isLoading || isRecordingAudio}
-                isLoading={isLoading && !isRecordingAudio}
-                className="bg-gradient-to-r from-ti-green-500 to-ti-teal-500 text-white rounded-xl px-6 shadow-md hover:shadow-lg"
-              >
-                <Send className="w-5 h-5" />
-              </Button>
-            </motion.div>
+              <motion.div whileHover={{ scale: isAssistantSpeaking ? 1.03 : 1 }} whileTap={{ scale: isAssistantSpeaking ? 0.96 : 1 }}>
+                <Button
+                  onClick={handleStopSpeaking}
+                  disabled={!isAssistantSpeaking}
+                  className={`rounded-2xl px-4 py-3 transition ${
+                    isAssistantSpeaking
+                      ? 'bg-[#8b6947] text-white shadow-soft'
+                      : 'cursor-not-allowed border border-border bg-[#eadcc6] text-muted opacity-70'
+                  }`}
+                  aria-label="Stop the assistant from speaking"
+                  title="Stop the assistant from speaking"
+                >
+                  <VolumeX className="w-5 h-5" />
+                </Button>
+              </motion.div>
+
+              <TextArea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+                placeholder={isRecordingAudio ? 'Recording... tap mic to stop' : "Share what's on your mind..."}
+                className="flex-1 min-h-[60px] max-h-[120px] rounded-2xl border border-border bg-white/90 px-4 py-3 text-[#2f2015] placeholder:text-[#a88866] placeholder:opacity-90 focus:border-[var(--beige-1)] focus:ring-2 focus:ring-[var(--beige-1)]"
+                disabled={isLoading || isRecordingAudio}
+              />
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}>
+                <Button
+                  onClick={() => handleSend()}
+                  disabled={!input.trim() || isLoading || isRecordingAudio}
+                  isLoading={isLoading && !isRecordingAudio}
+                  className="rounded-2xl bg-[var(--beige-1)] px-6 py-3 font-semibold text-[#2f2015] shadow-soft transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Send className="w-5 h-5" />
+                </Button>
+              </motion.div>
+            </div>
+            <p className="text-xs text-muted">
+              {voiceEnabled
+                ? 'Press Enter to send, Shift+Enter for a new line, or use the mic to record.'
+                : 'Press Enter to send, Shift+Enter for a new line.'}
+            </p>
           </div>
-          <p className="text-xs text-ti-ink/60 mt-2">
-            {voiceEnabled
-              ? 'Press Enter to send, Shift+Enter for new line, or use the mic to record'
-              : 'Press Enter to send, Shift+Enter for new line'}
-          </p>
         </div>
       </div>
 
-      {/* Crisis Notice */}
-      <div className="mt-6 p-4 bg-peach-50 border-2 border-ti-peach-100 rounded-2xl">
-        <p className="text-sm text-ti-ink-800">
-          <strong className="text-ti-ink-900">💛 Important:</strong> I'm here to support you, but I'm not a
-          crisis service. If you're in immediate danger, please call <strong>Emergency 999</strong> or contact{' '}
+      <div className="rounded-3xl border border-border bg-surface px-5 py-4 shadow-soft">
+        <p className="text-sm text-muted">
+          <strong className="text-text">Important:</strong> I'm here to support you, but I'm not a crisis service. If
+          you're in immediate danger, please call <strong>Emergency 999</strong> or contact{' '}
           <strong>Samaritans of Singapore at 1767</strong>.
         </p>
       </div>

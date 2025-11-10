@@ -165,7 +165,7 @@ export const RiskFlagsPage: React.FC = () => {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Students List */}
         <div className="lg:col-span-1">
-          <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+          <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
             <CardHeader>
               <CardTitle className="text-ti-ink-900">Students with Flags</CardTitle>
               {/* Filter Tabs */}
@@ -203,7 +203,7 @@ export const RiskFlagsPage: React.FC = () => {
                       className={`p-3 rounded-xl border cursor-pointer transition-all ${
                         selectedStudent?.userId === student.userId
                           ? 'bg-ti-green-50 border-ti-green-500 shadow-soft'
-                          : 'bg-ti-beige-50 border-ti-beige-200 hover:border-ti-green-300'
+                          : 'bg-[#f6e7cf] border-[#d5bc99] hover:border-[#caa677]'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
@@ -248,7 +248,7 @@ export const RiskFlagsPage: React.FC = () => {
         {/* Flag Details */}
         <div className="lg:col-span-2">
           {!selectedStudent ? (
-            <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+            <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
               <CardContent className="py-16">
                 <div className="text-center">
                   <div className="text-6xl mb-4">⚠️</div>
@@ -259,7 +259,7 @@ export const RiskFlagsPage: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {/* Student Header */}
-              <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+              <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
@@ -299,7 +299,7 @@ export const RiskFlagsPage: React.FC = () => {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl hover:shadow-lg transition-shadow">
+                    <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft hover:shadow-lg transition-shadow">
                       <CardContent className="p-5">
                         <div className="flex items-start justify-between gap-4">
                           {/* Left: Tags & Info */}

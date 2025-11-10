@@ -2,57 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-}
-
 :root {
-  /* Warm brown + beige theme */
-  --bg: #F5F1EA; /* ti.beige.100 - warm cream */
-  --surface: #FBF9F6; /* ti.beige.50 - lighter cream */
-  --ink: #3D2817; /* ti.brown.500 - dark chocolate brown */
-  --brand: #22C55E; /* ti.green.500 - kept for accents */
-
-  /* Light mode colors (legacy compatibility) */
-  --ti-bg: #F5F1EA;
-  --ti-surface: #FBF9F6;
-  --ti-surface-hover: #EDE7DC;
-  --ti-border: #E6DDCE;
-  --ti-text-primary: #3D2817; /* brown instead of blue-gray */
-  --ti-text-secondary: #9F8B6F; /* medium brown */
-  --ti-text-tertiary: #BAAA94; /* light brown */
+  --bg: #e8dcc8;
+  --surface: #f7efdf;
+  --text: #2f2015;
+  --muted: #7b6753;
+  --beige-1: #caa177;
+  --beige-2: #e6d4bf;
+  --beige-3: #fdf4e6;
+  --yellow: #f3d18f;
+  --brown-1: #8b6947;
+  --border: #d8c6af;
+  --border-dark: #4a3c2b;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --shadow-soft: 0 10px 40px rgba(43, 31, 20, 0.18);
 }
 
-.dark {
-  /* Dark mode colors */
-  --ti-bg: #0b1020;
-  --ti-surface: #111827;
-  --ti-surface-hover: #1f2937;
-  --ti-border: #374151;
-  --ti-text-primary: #f9fafb;
-  --ti-text-secondary: #d1d5db;
-  --ti-text-tertiary: #9ca3af;
+:root.dark {
+  --bg: #b8a488;
+  --surface: #a48c6d;
+  --text: #fef9f2;
+  --muted: #ebddcd;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
-  color: var(--ink);
-  font-size: 18px;
-  line-height: 1.7;
+  color: var(--text);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Reduced motion support */
+.app-shell {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 250ms ease, color 250ms ease;
+}
+
+:focus-visible {
+  outline: 2px solid var(--beige-1);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--beige-1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -61,190 +85,4 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--ti-surface);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--ti-border);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--ti-text-tertiary);
-}
-
-/* Focus styles for accessibility */
-:focus-visible {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
-}
-
-/* Voice UI Animations */
-@keyframes pulse-recording {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes equalizer-bar {
-  0%, 100% {
-    height: 4px;
-  }
-  50% {
-    height: 16px;
-  }
-}
-
-@keyframes fade-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes speaking-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
-  }
-}
-
-.equalizer {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  height: 16px;
-}
-
-.equalizer-bar {
-  width: 3px;
-  background: currentColor;
-  border-radius: 2px;
-  animation: equalizer-bar 1s ease-in-out infinite;
-}
-
-.equalizer-bar:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.equalizer-bar:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.equalizer-bar:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.equalizer-bar:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-.speaking-indicator {
-  animation: speaking-pulse 2s ease-in-out infinite;
-}
-
-.recording-pulse {
-  animation: pulse-recording 1.5s ease-in-out infinite;
-}
-
-/* Larger UI elements */
-button,
-input,
-textarea,
-select {
-  font-size: 1.125rem; /* 18px */
-  padding: 0.75rem 1.25rem; /* Increased padding */
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-textarea {
-  min-height: 3rem; /* 48px minimum height for better touch targets */
-}
-
-/* Larger buttons */
-button {
-  min-height: 3rem; /* 48px */
-  font-weight: 500;
-}
-
-/* Larger clickable areas */
-a {
-  padding: 0.25rem;
-  margin: -0.25rem;
-}
-
-/* Headings larger with Nunito Sans */
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Nunito Sans", Inter, system-ui, sans-serif;
-}
-
-h1 {
-  font-size: 2.5rem; /* 40px */
-  line-height: 1.2;
-  font-weight: 700;
-}
-
-h2 {
-  font-size: 2rem; /* 32px */
-  line-height: 1.3;
-  font-weight: 600;
-}
-
-h3 {
-  font-size: 1.625rem; /* 26px */
-  line-height: 1.4;
-  font-weight: 600;
-}
-
-h4 {
-  font-size: 1.375rem; /* 22px */
-  line-height: 1.5;
-  font-weight: 600;
-}
-
-/* Icons should be larger too */
-svg {
-  width: 1.5rem; /* 24px default */
-  height: 1.5rem;
-}
-
-/* Add breathing animation for focus mode */
-@keyframes breathe {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.05); opacity: 1; }
-}
-
-.breathe {
-  animation: breathe 4s ease-in-out infinite;
-}
-
-/* Gradient text utility */
-.gradient-text {
-  background: linear-gradient(135deg, #22C55E 0%, #10B981 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }

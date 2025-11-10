@@ -40,10 +40,14 @@ export const TasksPage: React.FC = () => {
   const loadTasks = async () => {
     try {
       const response = await taskAPI.getAll();
-      setTasks(response.data.tasks);
+      const payload = response?.data?.tasks ?? response?.data ?? [];
+      const normalized = Array.isArray(payload) ? payload : Array.isArray(payload.data) ? payload.data : [];
+      setTasks(normalized);
       loadSummary();
     } catch (error) {
+      console.error('Failed to load tasks:', error);
       toast.error('Failed to load tasks');
+      setTasks([]);
     }
   };
 
@@ -51,7 +55,8 @@ export const TasksPage: React.FC = () => {
     setIsLoadingSummary(true);
     try {
       const response = await taskAPI.getSummary();
-      setTaskSummary(response.data);
+      const summary = response?.data?.summary ?? response?.data ?? null;
+      setTaskSummary(summary);
     } catch (error) {
       console.error('Failed to load task summary:', error);
     } finally {
@@ -69,7 +74,8 @@ export const TasksPage: React.FC = () => {
 
     try {
       const response = await taskAPI.getStudySuggestions(taskId);
-      setStudySuggestions(response.data.suggestions);
+      const suggestions = response?.data?.suggestions ?? response?.data ?? [];
+      setStudySuggestions(Array.isArray(suggestions) ? suggestions : []);
     } catch (error) {
       toast.error('Failed to load study tips');
       console.error('Failed to load study suggestions:', error);
@@ -143,14 +149,13 @@ export const TasksPage: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6 p-6 bg-gradient-to-r from-purple-100 to-ti-beige-100 rounded-2xl"
+        className="mb-6 rounded-[32px] border border-[#e0cdb4] bg-gradient-to-r from-[#fef5e7] via-[#f4e2c8] to-[#edd2ad] p-6 shadow-soft"
       >
-        <h2 className="text-xl font-bold text-ti-ink-900 mb-2 flex items-center">
+        <h2 className="mb-2 flex items-center text-xl font-bold text-[#2f2015]">
           <span className="mr-2">📝</span> Need help organizing things?
         </h2>
-        <p className="text-ti-ink/70">
-          I know life can feel overwhelming sometimes. Let's break things down together—
-          one small step at a time.
+        <p className="text-sm text-[#5f4733]">
+          Let's break everything down into doable pieces. Pick a box below, add what's on your mind, and we'll plan it out together.
         </p>
       </motion.div>
 
@@ -174,7 +179,7 @@ export const TasksPage: React.FC = () => {
               key={column.status}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl border-2 border-ti-beige-300 shadow-card p-4"
+              className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] p-4 text-[#2f2015] shadow-soft"
             >
               <div className="flex items-center mb-4 pb-3 border-b-2 border-ti-beige-200">
                 <span className="text-2xl mr-2">{column.emoji}</span>
@@ -189,8 +194,8 @@ export const TasksPage: React.FC = () => {
                     layout
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    whileHover={{ y: -4, boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)' }}
-                    className="bg-ti-beige-50 border-2 border-ti-beige-200 rounded-xl p-3 transition-all cursor-pointer"
+                    whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0, 0, 0, 0.12)' }}
+                    className="cursor-pointer rounded-2xl border border-[#d0b087] bg-[#f6e7cf] p-3 transition-all"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-medium text-sm text-ti-ink-900">{task.title}</h3>

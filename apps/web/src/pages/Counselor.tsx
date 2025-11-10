@@ -54,7 +54,7 @@ export const CounselorDashboard: React.FC = () => {
     return (
       <div className="w-full">
         <h1 className="text-3xl font-extrabold tracking-tight text-ti-ink-900 mb-6">Counselor Dashboard</h1>
-        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+        <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
           <CardContent className="py-16">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ti-green-600 mx-auto mb-4" />
@@ -70,7 +70,7 @@ export const CounselorDashboard: React.FC = () => {
     return (
       <div className="w-full">
         <h1 className="text-3xl font-extrabold tracking-tight text-ti-ink-900 mb-6">Counselor Dashboard</h1>
-        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+        <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
           <CardContent className="py-16">
             <div className="text-center">
               <div className="text-6xl mb-4">⚠️</div>
@@ -98,25 +98,25 @@ export const CounselorDashboard: React.FC = () => {
       <h1 className="text-3xl font-extrabold tracking-tight text-ti-ink-900 mb-6">Counselor Dashboard</h1>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+        <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
           <CardContent className="pt-6">
             <div className="text-2xl font-bold text-ti-ink-900">{users.total || 0}</div>
             <div className="text-sm text-black/60">Total Students</div>
           </CardContent>
         </Card>
-        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+        <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
           <CardContent className="pt-6">
             <div className="text-2xl font-bold text-ti-ink-900">{users.active || 0}</div>
             <div className="text-sm text-black/60">Active (7 days)</div>
           </CardContent>
         </Card>
-        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+        <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
           <CardContent className="pt-6">
             <div className="text-2xl font-bold text-ti-ink-900">{mood.average || 0}</div>
             <div className="text-sm text-black/60">Avg Mood</div>
           </CardContent>
         </Card>
-        <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+        <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
           <CardContent className="pt-6">
             <div className="text-2xl font-bold text-red-600">{risk.openFlags || 0}</div>
             <div className="text-sm text-black/60">Open Risk Flags</div>
@@ -124,7 +124,7 @@ export const CounselorDashboard: React.FC = () => {
         </Card>
       </div>
 
-      <Card className="bg-white border-ti-beige-300 shadow-card rounded-2xl">
+      <Card className="rounded-3xl border border-[#c6a77f] bg-[#d7bb94] text-[#2f2015] shadow-soft">
         <CardHeader>
           <CardTitle className="text-ti-ink-900">Risk Flags - Requires Attention</CardTitle>
         </CardHeader>
@@ -136,7 +136,7 @@ export const CounselorDashboard: React.FC = () => {
               {flags.map((flag) => (
                 <div
                   key={flag._id}
-                  className="flex items-start justify-between p-4 bg-ti-beige-50 rounded-xl border border-ti-beige-200 hover:shadow-soft transition-shadow"
+                  className="flex items-start justify-between rounded-2xl border border-[#d5bc99] bg-[#f6e7cf] p-4 text-[#2f2015] transition-shadow hover:shadow-soft"
                 >
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
